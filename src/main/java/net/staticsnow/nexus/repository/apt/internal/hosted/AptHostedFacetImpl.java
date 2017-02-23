@@ -116,21 +116,6 @@ public class AptHostedFacetImpl
   private Config config;
 
   @Override
-  public Content doGet(final String path) {
-    StorageTx tx = UnitOfWork.currentTx();
-
-    Asset asset = findAsset(tx, tx.findBucket(getRepository()), path);
-    if (asset == null) {
-      return null;
-    }
-    if(asset.markAsAccessed()) {
-      tx.saveAsset(asset);
-    }
-
-    return toContent(asset, tx.requireBlob(asset.requireBlobRef()));
-  }
-
-  @Override
   protected void doConfigure(final Configuration configuration) throws Exception {
     config = facet(ConfigurationFacet.class).readSection(configuration, CONFIG_KEY, Config.class);
   }

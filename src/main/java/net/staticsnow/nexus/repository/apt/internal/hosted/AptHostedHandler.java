@@ -24,6 +24,7 @@ import org.sonatype.nexus.repository.view.Content;
 import org.sonatype.nexus.repository.view.Context;
 import org.sonatype.nexus.repository.view.Handler;
 
+import net.staticsnow.nexus.repository.apt.AptFacet;
 import net.staticsnow.nexus.repository.apt.internal.snapshot.AptSnapshotHandler;
 
 import static org.sonatype.nexus.repository.http.HttpMethods.GET;
@@ -51,9 +52,9 @@ public class AptHostedHandler
     }
   };
 
-  final Handler doGet = context -> {
+  final Handler get = context -> {
     String path = assetPath(context);
-    Content content = context.getRepository().facet(AptHostedFacet.class).doGet(path);
+    Content content = context.getRepository().facet(AptFacet.class).get(path);
     if (content == null) {
       return HttpResponses.notFound(path);
     }

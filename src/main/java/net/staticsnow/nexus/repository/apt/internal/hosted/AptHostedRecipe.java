@@ -93,7 +93,7 @@ class AptHostedRecipe
         .handler(unitOfWorkHandler)
         .handler(snapshotHandler)
         .handler(signingHandler)
-        .handler(hostedHandler.doGet)
+        .handler(hostedHandler.get)
         .create());
 
     builder.route(otherMatcher()
