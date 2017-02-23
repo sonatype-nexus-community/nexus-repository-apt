@@ -38,14 +38,12 @@ public class AptHostedHandler
   final Handler handle = context -> {
     String path = assetPath(context);
 
-    AptHostedFacetImpl hostedFacet = context.getRepository().facet(AptHostedFacetImpl.class);
-
     if (path.equals("rebuild-indexes")) {
-      hostedFacet.rebuildIndexes();
+      context.getRepository().facet(AptHostedFacet.class).rebuildIndexes();
       return HttpResponses.ok();
     }
     else if (path.equals("")) {
-      hostedFacet.ingestAsset(context.getRequest().getPayload());
+      context.getRepository().facet(AptHostedFacet.class).ingestAsset(context.getRequest().getPayload());
       return HttpResponses.created();
     }
     else {
@@ -55,7 +53,7 @@ public class AptHostedHandler
 
   final Handler doGet = context -> {
     String path = assetPath(context);
-    Content content = context.getRepository().facet(AptHostedFacetImpl.class).doGet(path);
+    Content content = context.getRepository().facet(AptHostedFacet.class).doGet(path);
     if (content == null) {
       return HttpResponses.notFound(path);
     }

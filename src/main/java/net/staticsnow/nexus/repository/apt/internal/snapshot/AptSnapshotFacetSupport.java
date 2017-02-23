@@ -30,9 +30,7 @@ import org.sonatype.nexus.repository.FacetSupport;
 import org.sonatype.nexus.repository.storage.Asset;
 import org.sonatype.nexus.repository.storage.Bucket;
 import org.sonatype.nexus.repository.storage.Component;
-import org.sonatype.nexus.repository.storage.StorageFacet;
 import org.sonatype.nexus.repository.storage.StorageTx;
-import org.sonatype.nexus.repository.storage.TempBlob;
 import org.sonatype.nexus.repository.transaction.TransactionalDeleteBlob;
 import org.sonatype.nexus.repository.transaction.TransactionalStoreBlob;
 import org.sonatype.nexus.repository.transaction.TransactionalTouchBlob;
@@ -67,7 +65,6 @@ public abstract class AptSnapshotFacetSupport
   public void createSnapshot(String id, SnapshotComponentSelector selector) throws IOException {
     StorageTx tx = UnitOfWork.currentTx();
     Bucket bucket = tx.findBucket(getRepository());
-    StorageFacet storageFacet = facet(StorageFacet.class);
 
     // Attempt to find Component before you create one
     Component component = findComponent(tx, getRepository(), id);
