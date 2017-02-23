@@ -27,9 +27,6 @@ import org.sonatype.nexus.repository.view.Handler;
 import net.staticsnow.nexus.repository.apt.AptFacet;
 import net.staticsnow.nexus.repository.apt.internal.snapshot.AptSnapshotHandler;
 
-import static org.sonatype.nexus.repository.http.HttpMethods.GET;
-import static org.sonatype.nexus.repository.http.HttpMethods.HEAD;
-
 @Named
 @Singleton
 public class AptHostedHandler
@@ -37,15 +34,8 @@ public class AptHostedHandler
 {
   // Some different approaches to handlers
   final Handler ingestAssset = context -> {
-    String path = assetPath(context);
-
-    if (path.equals("")) {
-      context.getRepository().facet(AptHostedFacet.class).ingestAsset(context.getRequest().getPayload());
-      return HttpResponses.created();
-    }
-    else {
-      return HttpResponses.methodNotAllowed(GET, HEAD);
-    }
+    context.getRepository().facet(AptHostedFacet.class).ingestAsset(context.getRequest().getPayload());
+    return HttpResponses.created();
   };
 
   final Handler rebuildIndexes = context -> {

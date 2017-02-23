@@ -132,7 +132,7 @@ public abstract class AptRecipeSupport
     return new Builder().matcher(
         LogicMatchers.and(
             new ActionMatcher(POST),
-            new TokenMatcher("/{path:.+}")
+            new TokenMatcher("/")
         ));
   }
 }
