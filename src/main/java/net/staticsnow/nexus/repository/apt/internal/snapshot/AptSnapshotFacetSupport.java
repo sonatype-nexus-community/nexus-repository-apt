@@ -66,7 +66,6 @@ public abstract class AptSnapshotFacetSupport
     StorageTx tx = UnitOfWork.currentTx();
     Bucket bucket = tx.findBucket(getRepository());
 
-    // Attempt to find Component before you create one
     Component component = findComponent(tx, getRepository(), id);
     if (component == null) {
       component = tx.createComponent(bucket, getRepository().getFormat()).name(id);

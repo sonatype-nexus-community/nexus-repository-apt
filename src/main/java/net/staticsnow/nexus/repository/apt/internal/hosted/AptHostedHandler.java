@@ -36,20 +36,21 @@ public class AptHostedHandler
   extends ComponentSupport
 {
   // Some different approaches to handlers
-  final Handler handle = context -> {
+  final Handler ingestAssset = context -> {
     String path = assetPath(context);
 
-    if (path.equals("rebuild-indexes")) {
-      context.getRepository().facet(AptHostedFacet.class).rebuildIndexes();
-      return HttpResponses.ok();
-    }
-    else if (path.equals("")) {
+    if (path.equals("")) {
       context.getRepository().facet(AptHostedFacet.class).ingestAsset(context.getRequest().getPayload());
       return HttpResponses.created();
     }
     else {
       return HttpResponses.methodNotAllowed(GET, HEAD);
     }
+  };
+
+  final Handler rebuildIndexes = context -> {
+    context.getRepository().facet(AptHostedFacet.class).rebuildIndexes();
+    return HttpResponses.ok();
   };
 
   final Handler get = context -> {

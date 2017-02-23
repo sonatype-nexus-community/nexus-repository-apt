@@ -96,6 +96,19 @@ class AptHostedRecipe
         .handler(hostedHandler.get)
         .create());
 
+    builder.route(rebuildIndexMatcher()
+        .handler(timingHandler)
+        .handler(securityHandler)
+        .handler(exceptionHandler)
+        .handler(conditionalRequestHandler)
+        .handler(partialFetchHandler)
+        .handler(contentHeadersHandler)
+        .handler(unitOfWorkHandler)
+        .handler(snapshotHandler)
+        .handler(signingHandler)
+        .handler(hostedHandler.rebuildIndexes)
+        .create());
+
     builder.route(otherMatcher()
         .handler(timingHandler)
         .handler(securityHandler)
@@ -106,7 +119,7 @@ class AptHostedRecipe
         .handler(unitOfWorkHandler)
         .handler(snapshotHandler)
         .handler(signingHandler)
-        .handler(hostedHandler.handle)
+        .handler(hostedHandler.ingestAssset)
         .create());
 
     builder.defaultHandlers(notFound());

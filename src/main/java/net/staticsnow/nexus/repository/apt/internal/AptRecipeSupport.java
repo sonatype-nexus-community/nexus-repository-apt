@@ -120,6 +120,14 @@ public abstract class AptRecipeSupport
         ));
   }
 
+  protected static Builder rebuildIndexMatcher() {
+    return new Builder().matcher(
+        LogicMatchers.and(
+            new ActionMatcher(POST),
+            new TokenMatcher("/rebuild-indexes")
+        ));
+  }
+
   protected static Builder otherMatcher() {
     return new Builder().matcher(
         LogicMatchers.and(
