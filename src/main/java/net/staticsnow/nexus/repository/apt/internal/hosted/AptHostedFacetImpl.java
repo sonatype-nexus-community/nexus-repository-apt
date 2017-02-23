@@ -15,13 +15,6 @@
 
 package net.staticsnow.nexus.repository.apt.internal.hosted;
 
-import static org.sonatype.nexus.common.hash.HashAlgorithm.MD5;
-import static org.sonatype.nexus.common.hash.HashAlgorithm.SHA1;
-import static org.sonatype.nexus.common.hash.HashAlgorithm.SHA256;
-import static org.sonatype.nexus.repository.storage.AssetEntityAdapter.P_ASSET_KIND;
-import static org.sonatype.nexus.repository.storage.MetadataNodeEntityAdapter.P_BUCKET;
-import static org.sonatype.nexus.repository.storage.MetadataNodeEntityAdapter.P_NAME;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
@@ -38,8 +31,6 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import java.util.zip.GZIPInputStream;
 
-import javax.inject.Named;
-
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ar.ArArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
@@ -51,7 +42,6 @@ import org.bouncycastle.openpgp.PGPException;
 
 import org.sonatype.nexus.common.hash.HashAlgorithm;
 import org.sonatype.nexus.orient.entity.AttachedEntityHelper;
-import org.sonatype.nexus.repository.Facet;
 import org.sonatype.nexus.repository.FacetSupport;
 import org.sonatype.nexus.repository.IllegalOperationException;
 import org.sonatype.nexus.repository.config.Configuration;
@@ -75,17 +65,26 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import net.staticsnow.nexus.repository.apt.AptFacet;
 import net.staticsnow.nexus.repository.apt.internal.AptMimeTypes;
-import net.staticsnow.nexus.repository.apt.internal.FacetHelper;
 import net.staticsnow.nexus.repository.apt.internal.debian.ControlFile;
 import net.staticsnow.nexus.repository.apt.internal.debian.ControlFile.Paragraph;
 import net.staticsnow.nexus.repository.apt.internal.debian.ControlFileParser;
 import net.staticsnow.nexus.repository.apt.internal.debian.Version;
 import net.staticsnow.nexus.repository.apt.internal.gpg.AptSigningFacet;
 
-@Named
-@Facet.Exposed
+import static net.staticsnow.nexus.repository.apt.internal.FacetHelper.*;
+import static org.sonatype.nexus.common.hash.HashAlgorithm.MD5;
+import static org.sonatype.nexus.common.hash.HashAlgorithm.SHA1;
+import static org.sonatype.nexus.common.hash.HashAlgorithm.SHA256;
+import static org.sonatype.nexus.repository.storage.AssetEntityAdapter.P_ASSET_KIND;
+import static org.sonatype.nexus.repository.storage.MetadataNodeEntityAdapter.P_BUCKET;
+import static org.sonatype.nexus.repository.storage.MetadataNodeEntityAdapter.P_NAME;
+
+/**
+ * {@link AptHostedFacet} implementation
+ */
 public class AptHostedFacetImpl
-    extends FacetSupport
+  extends FacetSupport
+  implements AptHostedFacet
 {
   private static final String P_INDEX_SECTION = "index_section";
 
@@ -117,6 +116,21 @@ public class AptHostedFacetImpl
   private Config config;
 
   @Override
+  public Content doGet(final String path) {
+    StorageTx tx = UnitOfWork.currentTx();
+
+    Asset asset = findAsset(tx, tx.findBucket(getRepository()), path);
+    if (asset == null) {
+      return null;
+    }
+    if(asset.markAsAccessed()) {
+      tx.saveAsset(asset);
+    }
+
+    return toContent(asset, tx.requireBlob(asset.requireBlobRef()));
+  }
+
+  @Override
   protected void doConfigure(final Configuration configuration) throws Exception {
     config = facet(ConfigurationFacet.class).readSection(configuration, CONFIG_KEY, Config.class);
   }
@@ -135,7 +149,7 @@ public class AptHostedFacetImpl
 
     ControlFile control = null;
 
-    try (TempBlob tempBlob = storageFacet.createTempBlob(body, FacetHelper.hashAlgorithms);
+    try (TempBlob tempBlob = storageFacet.createTempBlob(body, hashAlgorithms);
          ArArchiveInputStream is = new ArArchiveInputStream(tempBlob.get())) {
       ArchiveEntry debEntry;
       while ((debEntry = is.getNextEntry()) != null) {
@@ -177,7 +191,7 @@ public class AptHostedFacetImpl
       Content content = aptFacet
           .put(assetPath, new StreamPayload(() -> tempBlob.get(), body.getSize(), body.getContentType()));
       Asset asset = Content.findAsset(tx, bucket, content);
-      String indexSection = buildIndexSection(control, asset.size(), asset.getChecksums(FacetHelper.hashAlgorithms),
+      String indexSection = buildIndexSection(control, asset.size(), asset.getChecksums(hashAlgorithms),
           assetPath);
       asset.formatAttributes().set(P_ARCHITECTURE, architecture);
       asset.formatAttributes().set(P_PACKAGE_NAME, name);

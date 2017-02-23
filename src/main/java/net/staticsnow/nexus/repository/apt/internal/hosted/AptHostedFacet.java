@@ -6,6 +6,8 @@ import org.sonatype.nexus.repository.Facet;
 import org.sonatype.nexus.repository.view.Content;
 import org.sonatype.nexus.repository.view.Payload;
 
+import org.bouncycastle.openpgp.PGPException;
+
 /**
  * Persistence for Apt hosted
  */
@@ -15,5 +17,5 @@ public interface AptHostedFacet
 {
   Content doGet(String path);
 
-  void handle(String path, Payload payload) throws IOException;
+  void ingestAsset(Payload payload) throws IOException, PGPException;
 }

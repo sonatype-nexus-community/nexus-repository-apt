@@ -55,7 +55,7 @@ public class AptHostedHandler
 
   final Handler doGet = context -> {
     String path = assetPath(context);
-    Content content = context.getRepository().facet(AptHostedFacet.class).doGet(path);
+    Content content = context.getRepository().facet(AptHostedFacetImpl.class).doGet(path);
     if (content == null) {
       return HttpResponses.notFound(path);
     }
