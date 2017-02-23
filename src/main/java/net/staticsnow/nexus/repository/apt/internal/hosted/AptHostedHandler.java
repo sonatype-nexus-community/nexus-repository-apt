@@ -28,7 +28,6 @@ import net.staticsnow.nexus.repository.apt.internal.snapshot.AptSnapshotHandler;
 
 import static org.sonatype.nexus.repository.http.HttpMethods.GET;
 import static org.sonatype.nexus.repository.http.HttpMethods.HEAD;
-import static org.sonatype.nexus.repository.http.HttpMethods.POST;
 
 @Named
 @Singleton
@@ -38,27 +37,19 @@ public class AptHostedHandler
   // Some different approaches to handlers
   final Handler handle = context -> {
     String path = assetPath(context);
-    String method = context.getRequest().getAction();
 
     AptHostedFacetImpl hostedFacet = context.getRepository().facet(AptHostedFacetImpl.class);
 
-    switch (method) {
-      case POST: {
-        if (path.equals("rebuild-indexes")) {
-          hostedFacet.rebuildIndexes();
-          return HttpResponses.ok();
-        }
-        else if (path.equals("")) {
-          hostedFacet.ingestAsset(context.getRequest().getPayload());
-          return HttpResponses.created();
-        }
-        else {
-          return HttpResponses.methodNotAllowed(method, GET, HEAD);
-        }
-      }
-
-      default:
-        return HttpResponses.methodNotAllowed(method, GET, HEAD, POST);
+    if (path.equals("rebuild-indexes")) {
+      hostedFacet.rebuildIndexes();
+      return HttpResponses.ok();
+    }
+    else if (path.equals("")) {
+      hostedFacet.ingestAsset(context.getRequest().getPayload());
+      return HttpResponses.created();
+    }
+    else {
+      return HttpResponses.methodNotAllowed(GET, HEAD);
     }
   };
 
