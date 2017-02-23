@@ -31,7 +31,7 @@ import org.sonatype.nexus.repository.storage.StorageTx;
 import org.sonatype.nexus.repository.transaction.TransactionalDeleteBlob;
 import org.sonatype.nexus.transaction.UnitOfWork;
 
-import net.staticsnow.nexus.repository.apt.internal.hosted.AptHostedFacet.AssetAction;
+import net.staticsnow.nexus.repository.apt.internal.hosted.AptHostedFacetImpl.AssetAction;
 
 @Named
 public class AptHostedComponentMaintenanceFacet
@@ -49,8 +49,8 @@ public class AptHostedComponentMaintenanceFacet
     super.deleteAssetTx(assetId);
     if ("DEB".equals(assetKind)) {
       try {
-        getRepository().facet(AptHostedFacet.class)
-            .rebuildIndexes(new AptHostedFacet.AssetChange(AssetAction.REMOVED, asset));
+        getRepository().facet(AptHostedFacetImpl.class)
+            .rebuildIndexes(new AptHostedFacetImpl.AssetChange(AssetAction.REMOVED, asset));
       }
       catch (IOException e) {
         throw new UncheckedIOException(e);

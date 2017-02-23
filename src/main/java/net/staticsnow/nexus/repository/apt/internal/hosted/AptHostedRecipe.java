@@ -27,10 +27,8 @@ import org.sonatype.nexus.repository.Repository;
 import org.sonatype.nexus.repository.Type;
 import org.sonatype.nexus.repository.types.HostedType;
 import org.sonatype.nexus.repository.view.ConfigurableViewFacet;
-import org.sonatype.nexus.repository.view.Route;
 import org.sonatype.nexus.repository.view.Router;
 import org.sonatype.nexus.repository.view.ViewFacet;
-import org.sonatype.nexus.repository.view.matchers.AlwaysMatcher;
 
 import net.staticsnow.nexus.repository.apt.internal.AptFormat;
 import net.staticsnow.nexus.repository.apt.internal.AptRecipeSupport;
@@ -39,14 +37,14 @@ import net.staticsnow.nexus.repository.apt.internal.gpg.AptSigningHandler;
 
 @Named(AptHostedRecipe.NAME)
 @Singleton
-public class AptHostedRecipe
-    extends AptRecipeSupport
+class AptHostedRecipe
+  extends AptRecipeSupport
 {
 
   public static final String NAME = "apt-hosted";
 
   @Inject
-  Provider<AptHostedFacet> aptHostedFacet;
+  Provider<AptHostedFacetImpl> aptHostedFacet;
 
   @Inject
   Provider<AptSigningFacet> aptSigningFacet;
@@ -61,7 +59,7 @@ public class AptHostedRecipe
   AptSigningHandler signingHandler;
 
   @Inject
-  public AptHostedRecipe(
+  AptHostedRecipe(
       @Named(HostedType.NAME) Type type,
       @Named(AptFormat.NAME) Format format)
   {
@@ -85,8 +83,7 @@ public class AptHostedRecipe
   private ViewFacet configure(final ConfigurableViewFacet facet) {
     Router.Builder builder = new Router.Builder();
 
-    builder.route(new Route.Builder()
-        .matcher(new AlwaysMatcher())
+    builder.route(assetsMatcher()
         .handler(timingHandler)
         .handler(securityHandler)
         .handler(exceptionHandler)
@@ -96,11 +93,26 @@ public class AptHostedRecipe
         .handler(unitOfWorkHandler)
         .handler(snapshotHandler)
         .handler(signingHandler)
-        .handler(hostedHandler)
+        .handler(hostedHandler.doGet)
+        .create());
+
+    builder.route(otherMatcher()
+        .handler(timingHandler)
+        .handler(securityHandler)
+        .handler(exceptionHandler)
+        .handler(conditionalRequestHandler)
+        .handler(partialFetchHandler)
+        .handler(contentHeadersHandler)
+        .handler(unitOfWorkHandler)
+        .handler(snapshotHandler)
+        .handler(signingHandler)
+        .handler(hostedHandler.handle)
         .create());
 
     builder.defaultHandlers(notFound());
+
     facet.configure(builder.create());
+
     return facet;
   }
 }

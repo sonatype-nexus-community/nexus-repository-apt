@@ -38,8 +38,8 @@ import net.staticsnow.nexus.repository.apt.internal.AptRecipeSupport;
 
 @Named(AptProxyRecipe.NAME)
 @Singleton
-public class AptProxyRecipe
-    extends AptRecipeSupport
+class AptProxyRecipe
+  extends AptRecipeSupport
 {
 
   public static final String NAME = "apt-proxy";
@@ -54,7 +54,7 @@ public class AptProxyRecipe
   ProxyHandler proxyHandler;
 
   @Inject
-  public AptProxyRecipe(
+  AptProxyRecipe(
       @Named(ProxyType.NAME) Type type,
       @Named(AptFormat.NAME) Format format)
   {

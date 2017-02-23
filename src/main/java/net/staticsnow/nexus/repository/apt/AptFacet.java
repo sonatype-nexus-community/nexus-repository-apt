@@ -24,15 +24,17 @@ import org.sonatype.nexus.repository.view.Content;
 import org.sonatype.nexus.repository.view.Payload;
 
 @Facet.Exposed
-public interface AptFacet extends Facet {
-	@Nullable
-	Content get(String path) throws IOException;
+public interface AptFacet
+  extends Facet
+{
+  @Nullable
+  Content get(String path) throws IOException;
 
-	Content put(String path, Payload payload) throws IOException;
+  Content put(String path, Payload payload) throws IOException;
 
-	boolean delete(String path) throws IOException;
-	
-	public boolean isFlat();
-	
-	public String getDistribution();
+  boolean delete(String path) throws IOException;
+
+  boolean isFlat();
+
+  String getDistribution();
 }

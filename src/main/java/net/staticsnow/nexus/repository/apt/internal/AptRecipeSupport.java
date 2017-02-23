@@ -33,15 +33,23 @@ import org.sonatype.nexus.repository.storage.SingleAssetComponentMaintenance;
 import org.sonatype.nexus.repository.storage.StorageFacet;
 import org.sonatype.nexus.repository.storage.UnitOfWorkHandler;
 import org.sonatype.nexus.repository.view.ConfigurableViewFacet;
+import org.sonatype.nexus.repository.view.Route.Builder;
 import org.sonatype.nexus.repository.view.handlers.ConditionalRequestHandler;
 import org.sonatype.nexus.repository.view.handlers.ContentHeadersHandler;
 import org.sonatype.nexus.repository.view.handlers.ExceptionHandler;
 import org.sonatype.nexus.repository.view.handlers.TimingHandler;
+import org.sonatype.nexus.repository.view.matchers.ActionMatcher;
+import org.sonatype.nexus.repository.view.matchers.logic.LogicMatchers;
+import org.sonatype.nexus.repository.view.matchers.token.TokenMatcher;
 
 import net.staticsnow.nexus.repository.apt.internal.snapshot.AptSnapshotHandler;
 
+import static org.sonatype.nexus.repository.http.HttpMethods.GET;
+import static org.sonatype.nexus.repository.http.HttpMethods.HEAD;
+import static org.sonatype.nexus.repository.http.HttpMethods.POST;
+
 public abstract class AptRecipeSupport
-    extends RecipeSupport
+  extends RecipeSupport
 {
   @Inject
   protected Provider<AptSecurityFacet> securityFacet;
@@ -102,5 +110,21 @@ public abstract class AptRecipeSupport
 
   protected AptRecipeSupport(final Type type, final Format format) {
     super(type, format);
+  }
+
+  protected static Builder assetsMatcher() {
+    return new Builder().matcher(
+        LogicMatchers.and(
+            new ActionMatcher(GET, HEAD),
+            new TokenMatcher("/{path:.+}")
+        ));
+  }
+
+  protected static Builder otherMatcher() {
+    return new Builder().matcher(
+        LogicMatchers.and(
+            new ActionMatcher(POST),
+            new TokenMatcher("/{path:.+}")
+        ));
   }
 }

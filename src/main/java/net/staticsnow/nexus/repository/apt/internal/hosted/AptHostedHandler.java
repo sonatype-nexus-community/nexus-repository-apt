@@ -15,12 +15,6 @@
 
 package net.staticsnow.nexus.repository.apt.internal.hosted;
 
-import static org.sonatype.nexus.repository.http.HttpMethods.GET;
-import static org.sonatype.nexus.repository.http.HttpMethods.HEAD;
-import static org.sonatype.nexus.repository.http.HttpMethods.POST;
-
-import java.io.IOException;
-
 import javax.inject.Named;
 import javax.inject.Singleton;
 
@@ -29,31 +23,26 @@ import org.sonatype.nexus.repository.http.HttpResponses;
 import org.sonatype.nexus.repository.view.Content;
 import org.sonatype.nexus.repository.view.Context;
 import org.sonatype.nexus.repository.view.Handler;
-import org.sonatype.nexus.repository.view.Response;
 
-import net.staticsnow.nexus.repository.apt.AptFacet;
 import net.staticsnow.nexus.repository.apt.internal.snapshot.AptSnapshotHandler;
+
+import static org.sonatype.nexus.repository.http.HttpMethods.GET;
+import static org.sonatype.nexus.repository.http.HttpMethods.HEAD;
+import static org.sonatype.nexus.repository.http.HttpMethods.POST;
 
 @Named
 @Singleton
 public class AptHostedHandler
-    extends ComponentSupport
-    implements Handler
+  extends ComponentSupport
 {
-  @Override
-  public Response handle(Context context) throws Exception {
+  // Some different approaches to handlers
+  final Handler handle = context -> {
     String path = assetPath(context);
     String method = context.getRequest().getAction();
 
-    AptFacet aptFacet = context.getRepository().facet(AptFacet.class);
-    AptHostedFacet hostedFacet = context.getRepository().facet(AptHostedFacet.class);
+    AptHostedFacetImpl hostedFacet = context.getRepository().facet(AptHostedFacetImpl.class);
 
     switch (method) {
-      case GET:
-      case HEAD: {
-        return doGet(path, aptFacet);
-      }
-
       case POST: {
         if (path.equals("rebuild-indexes")) {
           hostedFacet.rebuildIndexes();
@@ -71,15 +60,16 @@ public class AptHostedHandler
       default:
         return HttpResponses.methodNotAllowed(method, GET, HEAD, POST);
     }
-  }
+  };
 
-  private Response doGet(String path, AptFacet aptFacet) throws IOException {
-    Content content = aptFacet.get(path);
+  final Handler doGet = context -> {
+    String path = assetPath(context);
+    Content content = context.getRepository().facet(AptHostedFacet.class).doGet(path);
     if (content == null) {
       return HttpResponses.notFound(path);
     }
     return HttpResponses.ok(content);
-  }
+  };
 
   private String assetPath(Context context) {
     final AptSnapshotHandler.State snapshotState = context.getAttributes().require(AptSnapshotHandler.State.class);

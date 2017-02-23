@@ -19,16 +19,18 @@ import java.util.List;
 
 import net.staticsnow.nexus.repository.apt.internal.debian.Release;
 
-public class AllSnapshotComponentSelector implements SnapshotComponentSelector {
+public class AllSnapshotComponentSelector
+  implements SnapshotComponentSelector
+{
 
-	@Override
-	public List<String> getArchitectures(Release release) {
-		return release.getArchitectures();
-	}
+  @Override
+  public List<String> getArchitectures(Release release) {
+    return release.getArchitectures();
+  }
 
-	@Override
-	public List<String> getComponents(Release release) {
-		return release.getComponents();
-	}
+  @Override
+  public List<String> getComponents(Release release) {
+    return release.getComponents();
+  }
 
 }

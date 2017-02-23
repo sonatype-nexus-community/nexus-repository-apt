@@ -15,9 +15,12 @@
 
 package net.staticsnow.nexus.repository.apt.internal;
 
+import static java.util.Collections.singletonList;
 import static org.sonatype.nexus.common.hash.HashAlgorithm.MD5;
 import static org.sonatype.nexus.common.hash.HashAlgorithm.SHA1;
 import static org.sonatype.nexus.common.hash.HashAlgorithm.SHA256;
+import static org.sonatype.nexus.repository.storage.ComponentEntityAdapter.P_VERSION;
+import static org.sonatype.nexus.repository.storage.MetadataNodeEntityAdapter.P_NAME;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,10 +32,13 @@ import javax.annotation.Nullable;
 import org.sonatype.nexus.blobstore.api.Blob;
 import org.sonatype.nexus.common.collect.AttributesMap;
 import org.sonatype.nexus.common.hash.HashAlgorithm;
+import org.sonatype.nexus.repository.Repository;
 import org.sonatype.nexus.repository.storage.Asset;
 import org.sonatype.nexus.repository.storage.AssetBlob;
 import org.sonatype.nexus.repository.storage.Bucket;
+import org.sonatype.nexus.repository.storage.Component;
 import org.sonatype.nexus.repository.storage.MetadataNodeEntityAdapter;
+import org.sonatype.nexus.repository.storage.Query;
 import org.sonatype.nexus.repository.storage.StorageTx;
 import org.sonatype.nexus.repository.view.Content;
 import org.sonatype.nexus.repository.view.Payload;
@@ -112,6 +118,28 @@ public class FacetHelper
   }
 
   /**
+   * Find a component by it's name
+   *
+   * @return found component of null if not found
+   */
+  @Nullable
+  public static Component findComponent(final StorageTx tx,
+                                 final Repository repository,
+                                 final String name)
+  {
+    Iterable<Component> components = tx.findComponents(
+        Query.builder()
+            .where(P_NAME).eq(name)
+            .build(),
+        singletonList(repository)
+    );
+    if (components.iterator().hasNext()) {
+      return components.iterator().next();
+    }
+    return null;
+  }
+
+  /**
    * Find an asset by it's name.
    *
    * @return found asset or null if not found
@@ -127,9 +155,9 @@ public class FacetHelper
    * @return blob content
    */
   public static Content saveAsset(final StorageTx tx,
-                           final Asset asset,
-                           final Supplier<InputStream> contentSupplier,
-                           final Payload payload) throws IOException
+                                  final Asset asset,
+                                  final Supplier<InputStream> contentSupplier,
+                                  final Payload payload) throws IOException
   {
     AttributesMap contentAttributes = null;
     String contentType = null;
@@ -146,10 +174,10 @@ public class FacetHelper
    * @return blob content
    */
   public static Content saveAsset(final StorageTx tx,
-                           final Asset asset,
-                           final Supplier<InputStream> contentSupplier,
-                           final String contentType,
-                           @Nullable final AttributesMap contentAttributes) throws IOException
+                                  final Asset asset,
+                                  final Supplier<InputStream> contentSupplier,
+                                  final String contentType,
+                                  @Nullable final AttributesMap contentAttributes) throws IOException
   {
     Content.applyToAsset(asset, Content.maintainLastModified(asset, contentAttributes));
     AssetBlob assetBlob = tx.setBlob(

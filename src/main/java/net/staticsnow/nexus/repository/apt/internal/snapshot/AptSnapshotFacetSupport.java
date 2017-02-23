@@ -44,8 +44,8 @@ import net.staticsnow.nexus.repository.apt.internal.debian.ControlFile;
 import net.staticsnow.nexus.repository.apt.internal.debian.ControlFileParser;
 import net.staticsnow.nexus.repository.apt.internal.debian.Release;
 
-import static net.staticsnow.nexus.repository.apt.internal.FacetHelper.hashAlgorithms;
 import static net.staticsnow.nexus.repository.apt.internal.FacetHelper.findAsset;
+import static net.staticsnow.nexus.repository.apt.internal.FacetHelper.findComponent;
 import static net.staticsnow.nexus.repository.apt.internal.FacetHelper.saveAsset;
 import static net.staticsnow.nexus.repository.apt.internal.FacetHelper.toContent;
 import static net.staticsnow.nexus.repository.apt.internal.FacetHelper.getReleaseIndexSpecifiers;
@@ -69,21 +69,22 @@ public abstract class AptSnapshotFacetSupport
     Bucket bucket = tx.findBucket(getRepository());
     StorageFacet storageFacet = facet(StorageFacet.class);
 
-    // TODO: Should find component before you try to save one
-    Component component = tx.createComponent(bucket, getRepository().getFormat()).name(id);
+    // Attempt to find Component before you create one
+    Component component = findComponent(tx, getRepository(), id);
+    if (component == null) {
+      component = tx.createComponent(bucket, getRepository().getFormat()).name(id);
+    }
     tx.saveComponent(component);
 
     for (SnapshotItem item : collectSnapshotItems(selector)) {
       String assetName = createAssetPath(id, item.specifier.path);
-      Asset asset = tx.createAsset(bucket, component).name(assetName);
+      Asset asset = findAsset(tx, bucket, assetName);
 
-      try (TempBlob tempBlob = storageFacet.createTempBlob(item.content, hashAlgorithms)) {
-        // tx.attachBlob(asset, tempBlob);
+      if(asset == null) {
+        asset = tx.createAsset(bucket, component).name(assetName);
       }
-      finally {
-        item.content.close();
-      }
-      // saveAsset(asset);
+
+      saveAsset(tx, asset, item.content.openInputStream(), item);
     }
   }
 
