@@ -52,12 +52,11 @@ import org.sonatype.nexus.repository.storage.StorageTx;
 import org.sonatype.nexus.repository.view.Content;
 import org.sonatype.nexus.repository.view.Context;
 import org.sonatype.nexus.repository.view.payloads.HttpEntityPayload;
-import org.sonatype.nexus.transaction.Transactional;
+import org.sonatype.nexus.repository.transaction.TransactionalTouchMetadata;
 import org.sonatype.nexus.transaction.UnitOfWork;
 
 import com.google.common.base.Strings;
 import com.google.common.net.HttpHeaders;
-import com.orientechnologies.common.concur.ONeedRetryException;
 
 import net.staticsnow.nexus.repository.apt.AptFacet;
 import net.staticsnow.nexus.repository.apt.internal.snapshot.AptSnapshotHandler;
@@ -87,7 +86,6 @@ public class AptProxyFacet extends ProxyFacetSupport {
 		return getAptFacet().put(assetPath(context), content);
 	}
 
-	@Transactional(retryOn = { ONeedRetryException.class })
 	@Override
 	protected void indicateVerified(Context context, Content content, CacheInfo cacheInfo) throws IOException {
 		doIndicateVerified(content, cacheInfo, assetPath(context));
@@ -205,7 +203,7 @@ public class AptProxyFacet extends ProxyFacetSupport {
 		return null;
 	}
 
-	@Transactional(retryOn = { ONeedRetryException.class })
+	@TransactionalTouchMetadata
 	protected void doIndicateVerified(Content content, CacheInfo cacheInfo, String assetPath) {
 		StorageTx tx = UnitOfWork.currentTx();
 		Bucket bucket = tx.findBucket(getRepository());

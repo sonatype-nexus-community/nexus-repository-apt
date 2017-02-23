@@ -55,10 +55,12 @@ public class AptHostedHandler extends ComponentSupport implements Handler {
 			if (path.equals("rebuild-indexes")) {
 				hostedFacet.rebuildIndexes();
 				return HttpResponses.ok();
-			} else if (path.equals("")) {
+			}
+			else if (path.equals("")) {
 				hostedFacet.ingestAsset(context.getRequest().getPayload());
 				return HttpResponses.created();
-			} else {
+			}
+			else {
 				return HttpResponses.methodNotAllowed(method, GET, HEAD);
 			}
 		}
