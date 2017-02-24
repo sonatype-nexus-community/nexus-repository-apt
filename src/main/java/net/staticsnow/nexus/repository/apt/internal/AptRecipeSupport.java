@@ -44,9 +44,12 @@ import org.sonatype.nexus.repository.view.matchers.token.TokenMatcher;
 
 import net.staticsnow.nexus.repository.apt.internal.snapshot.AptSnapshotHandler;
 
+import static org.sonatype.nexus.repository.http.HttpMethods.DELETE;
 import static org.sonatype.nexus.repository.http.HttpMethods.GET;
 import static org.sonatype.nexus.repository.http.HttpMethods.HEAD;
+import static org.sonatype.nexus.repository.http.HttpMethods.MKCOL;
 import static org.sonatype.nexus.repository.http.HttpMethods.POST;
+import static org.sonatype.nexus.repository.http.HttpMethods.PUT;
 
 public abstract class AptRecipeSupport
   extends RecipeSupport
@@ -133,6 +136,47 @@ public abstract class AptRecipeSupport
         LogicMatchers.and(
             new ActionMatcher(POST),
             new TokenMatcher("/")
+        ));
+  }
+
+  protected static Builder signingMatcher() {
+    return new Builder().matcher(
+        LogicMatchers.and(
+            new ActionMatcher(GET),
+            new TokenMatcher("/repository-key.gpg")
+        ));
+  }
+
+  protected static Builder snapshotMatcher() {
+    return new Builder().matcher(
+        LogicMatchers.and(
+            new ActionMatcher(GET, HEAD),
+            new TokenMatcher("/snapshots/{id:([^/]+)}/?{path:(.*)}")
+        ));
+  }
+
+  protected static Builder createSnapshotMatcher() {
+    return new Builder().matcher(
+        LogicMatchers.and(
+            new ActionMatcher(PUT),
+            new TokenMatcher("/snapshots/{id:([^/]+)}/")
+        ));
+  }
+
+
+  protected static Builder deleteSnapshotMatcher() {
+    return new Builder().matcher(
+        LogicMatchers.and(
+            new ActionMatcher(DELETE),
+            new TokenMatcher("/snapshots/{id:([^/]+)}/")
+        ));
+  }
+
+  protected static Builder snapshotCollectionMatcher() {
+    return new Builder().matcher(
+        LogicMatchers.and(
+            new ActionMatcher(MKCOL),
+            new TokenMatcher("/snapshots/{id:([^/]+)}/")
         ));
   }
 }

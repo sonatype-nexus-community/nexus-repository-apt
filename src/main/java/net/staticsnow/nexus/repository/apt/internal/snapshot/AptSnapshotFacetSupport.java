@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.google.common.base.Supplier;
 import org.bouncycastle.bcpg.ArmoredInputStream;
 
 import org.sonatype.nexus.repository.FacetSupport;
@@ -62,15 +63,16 @@ public abstract class AptSnapshotFacetSupport
 
   @Override
   @TransactionalStoreBlob
-  public void createSnapshot(String id, SnapshotComponentSelector selector) throws IOException {
+  public void createSnapshot(String id,
+                             SnapshotComponentSelector selector) throws IOException {
     StorageTx tx = UnitOfWork.currentTx();
     Bucket bucket = tx.findBucket(getRepository());
 
     Component component = findComponent(tx, getRepository(), id);
     if (component == null) {
       component = tx.createComponent(bucket, getRepository().getFormat()).name(id);
+      tx.saveComponent(component);
     }
-    tx.saveComponent(component);
 
     for (SnapshotItem item : collectSnapshotItems(selector)) {
       String assetName = createAssetPath(id, item.specifier.path);
@@ -79,8 +81,7 @@ public abstract class AptSnapshotFacetSupport
       if(asset == null) {
         asset = tx.createAsset(bucket, component).name(assetName);
       }
-
-      saveAsset(tx, asset, item.content.openInputStream(), item);
+      saveAsset(tx, asset, item.content);
     }
   }
 

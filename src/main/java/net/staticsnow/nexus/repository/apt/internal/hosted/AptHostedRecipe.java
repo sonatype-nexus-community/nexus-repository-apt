@@ -91,9 +91,63 @@ class AptHostedRecipe
         .handler(partialFetchHandler)
         .handler(contentHeadersHandler)
         .handler(unitOfWorkHandler)
-        .handler(snapshotHandler)
-        .handler(signingHandler)
         .handler(hostedHandler.get)
+        .create());
+
+    builder.route(signingMatcher()
+        .handler(timingHandler)
+        .handler(securityHandler)
+        .handler(exceptionHandler)
+        .handler(conditionalRequestHandler)
+        .handler(partialFetchHandler)
+        .handler(contentHeadersHandler)
+        .handler(unitOfWorkHandler)
+        .handler(signingHandler.handle)
+        .create());
+
+    builder.route(snapshotMatcher()
+        .handler(timingHandler)
+        .handler(securityHandler)
+        .handler(exceptionHandler)
+        .handler(conditionalRequestHandler)
+        .handler(partialFetchHandler)
+        .handler(contentHeadersHandler)
+        .handler(unitOfWorkHandler)
+        .handler(snapshotHandler.handleSnapshotFetchRequest)
+        .handler(hostedHandler.get)
+        .create());
+
+    builder.route(createSnapshotMatcher()
+        .handler(timingHandler)
+        .handler(securityHandler)
+        .handler(exceptionHandler)
+        .handler(conditionalRequestHandler)
+        .handler(partialFetchHandler)
+        .handler(contentHeadersHandler)
+        .handler(unitOfWorkHandler)
+        .handler(snapshotHandler.createSnapshot)
+        .create());
+
+    builder.route(snapshotCollectionMatcher()
+        .handler(timingHandler)
+        .handler(securityHandler)
+        .handler(exceptionHandler)
+        .handler(conditionalRequestHandler)
+        .handler(partialFetchHandler)
+        .handler(contentHeadersHandler)
+        .handler(unitOfWorkHandler)
+        .handler(snapshotHandler.createSnapshotCollection)
+        .create());
+
+    builder.route(deleteSnapshotMatcher()
+        .handler(timingHandler)
+        .handler(securityHandler)
+        .handler(exceptionHandler)
+        .handler(conditionalRequestHandler)
+        .handler(partialFetchHandler)
+        .handler(contentHeadersHandler)
+        .handler(unitOfWorkHandler)
+        .handler(snapshotHandler.deleteSnapshot)
         .create());
 
     builder.route(rebuildIndexMatcher()
@@ -104,8 +158,6 @@ class AptHostedRecipe
         .handler(partialFetchHandler)
         .handler(contentHeadersHandler)
         .handler(unitOfWorkHandler)
-        .handler(snapshotHandler)
-        .handler(signingHandler)
         .handler(hostedHandler.rebuildIndexes)
         .create());
 
@@ -117,8 +169,6 @@ class AptHostedRecipe
         .handler(partialFetchHandler)
         .handler(contentHeadersHandler)
         .handler(unitOfWorkHandler)
-        .handler(snapshotHandler)
-        .handler(signingHandler)
         .handler(hostedHandler.ingestAssset)
         .create());
 

@@ -155,7 +155,6 @@ public class FacetHelper
    */
   public static Content saveAsset(final StorageTx tx,
                                   final Asset asset,
-                                  final Supplier<InputStream> contentSupplier,
                                   final Payload payload) throws IOException
   {
     AttributesMap contentAttributes = null;
@@ -164,7 +163,8 @@ public class FacetHelper
       contentAttributes = ((Content) payload).getAttributes();
       contentType = payload.getContentType();
     }
-    return saveAsset(tx, asset, contentSupplier, contentType, contentAttributes);
+    InputStream is = payload.openInputStream();
+    return saveAsset(tx, asset, () -> is, contentType, contentAttributes);
   }
 
   /**

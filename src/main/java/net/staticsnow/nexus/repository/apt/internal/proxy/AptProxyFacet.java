@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Named;
 
+import net.staticsnow.nexus.repository.apt.internal.AptPathUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -52,6 +53,7 @@ import org.sonatype.nexus.repository.storage.Bucket;
 import org.sonatype.nexus.repository.storage.StorageTx;
 import org.sonatype.nexus.repository.view.Content;
 import org.sonatype.nexus.repository.view.Context;
+import org.sonatype.nexus.repository.view.matchers.token.TokenMatcher;
 import org.sonatype.nexus.repository.view.payloads.HttpEntityPayload;
 import org.sonatype.nexus.repository.transaction.TransactionalTouchMetadata;
 import org.sonatype.nexus.transaction.UnitOfWork;
@@ -60,7 +62,6 @@ import com.google.common.base.Strings;
 import com.google.common.net.HttpHeaders;
 
 import net.staticsnow.nexus.repository.apt.AptFacet;
-import net.staticsnow.nexus.repository.apt.internal.snapshot.AptSnapshotHandler;
 import net.staticsnow.nexus.repository.apt.internal.snapshot.SnapshotItem;
 import net.staticsnow.nexus.repository.apt.internal.snapshot.SnapshotItem.ContentSpecifier;
 
@@ -99,17 +100,18 @@ public class AptProxyFacet
     return assetPath(context);
   }
 
+  protected String assetPath(Context context) {
+    TokenMatcher.State matcherState = AptPathUtils.matcherState(context);
+    return AptPathUtils.assetPath(matcherState);
+  }
+
   @Override
   protected CacheController getCacheController(Context context) {
-    if (assetPath(context).endsWith(".deb") || assetPath(context).endsWith(".udeb")) {
+    String path = assetPath(context);
+    if (path.endsWith(".deb") || path.endsWith(".udeb")) {
       return cacheControllerHolder.getContentCacheController();
     }
     return cacheControllerHolder.getMetadataCacheController();
-  }
-
-  private String assetPath(Context context) {
-    final AptSnapshotHandler.State snapshotState = context.getAttributes().require(AptSnapshotHandler.State.class);
-    return snapshotState.assetPath;
   }
 
   private List<SnapshotItem> fetchLatest(List<ContentSpecifier> specs) throws IOException {

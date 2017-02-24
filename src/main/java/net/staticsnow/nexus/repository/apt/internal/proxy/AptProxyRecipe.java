@@ -90,7 +90,7 @@ class AptProxyRecipe
         .handler(partialFetchHandler)
         .handler(contentHeadersHandler)
         .handler(unitOfWorkHandler)
-        .handler(snapshotHandler)
+        .handler(snapshotHandler.handleSnapshotFetchRequest)
         .handler(proxyHandler)
         .create());
 

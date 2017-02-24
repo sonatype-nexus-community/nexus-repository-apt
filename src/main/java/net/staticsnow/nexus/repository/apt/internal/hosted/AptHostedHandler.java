@@ -21,11 +21,11 @@ import javax.inject.Singleton;
 import org.sonatype.goodies.common.ComponentSupport;
 import org.sonatype.nexus.repository.http.HttpResponses;
 import org.sonatype.nexus.repository.view.Content;
-import org.sonatype.nexus.repository.view.Context;
 import org.sonatype.nexus.repository.view.Handler;
+import org.sonatype.nexus.repository.view.matchers.token.TokenMatcher;
 
 import net.staticsnow.nexus.repository.apt.AptFacet;
-import net.staticsnow.nexus.repository.apt.internal.snapshot.AptSnapshotHandler;
+import net.staticsnow.nexus.repository.apt.internal.AptPathUtils;
 
 @Named
 @Singleton
@@ -44,16 +44,13 @@ public class AptHostedHandler
   };
 
   final Handler get = context -> {
-    String path = assetPath(context);
+    TokenMatcher.State matcherState = AptPathUtils.matcherState(context);
+    String path = AptPathUtils.assetPath(matcherState);
+
     Content content = context.getRepository().facet(AptFacet.class).get(path);
     if (content == null) {
       return HttpResponses.notFound(path);
     }
     return HttpResponses.ok(content);
   };
-
-  private String assetPath(Context context) {
-    final AptSnapshotHandler.State snapshotState = context.getAttributes().require(AptSnapshotHandler.State.class);
-    return snapshotState.assetPath;
-  }
 }
