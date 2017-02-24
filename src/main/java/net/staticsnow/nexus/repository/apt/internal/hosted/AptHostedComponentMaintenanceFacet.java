@@ -23,37 +23,41 @@ import java.io.UncheckedIOException;
 import javax.inject.Named;
 
 import org.bouncycastle.openpgp.PGPException;
+
 import org.sonatype.nexus.common.entity.EntityId;
 import org.sonatype.nexus.repository.storage.Asset;
 import org.sonatype.nexus.repository.storage.DefaultComponentMaintenanceImpl;
 import org.sonatype.nexus.repository.storage.StorageTx;
-import org.sonatype.nexus.transaction.Transactional;
+import org.sonatype.nexus.repository.transaction.TransactionalDeleteBlob;
 import org.sonatype.nexus.transaction.UnitOfWork;
 
-import com.orientechnologies.common.concur.ONeedRetryException;
-
-import net.staticsnow.nexus.repository.apt.internal.hosted.AptHostedFacet.AssetAction;
+import net.staticsnow.nexus.repository.apt.internal.hosted.AptHostedFacetImpl.AssetAction;
 
 @Named
-public class AptHostedComponentMaintenanceFacet extends DefaultComponentMaintenanceImpl {
-	@Transactional(retryOn = ONeedRetryException.class)
-	@Override
-	protected void deleteAssetTx(EntityId assetId) {
-		StorageTx tx = UnitOfWork.currentTx();
-		Asset asset = tx.findAsset(assetId, tx.findBucket(getRepository()));
-		if (asset == null) {
-			return;
-		}
-		String assetKind = asset.formatAttributes().get(P_ASSET_KIND, String.class);
-		super.deleteAssetTx(assetId);
-		if ("DEB".equals(assetKind)) {
-			try {
-				getRepository().facet(AptHostedFacet.class).rebuildIndexes(new AptHostedFacet.AssetChange(AssetAction.REMOVED, asset));
-			} catch (IOException e) {
-				throw new UncheckedIOException(e);
-			} catch (PGPException e) {
-				throw new RuntimeException(e);
-			}
-		}
-	}
+public class AptHostedComponentMaintenanceFacet
+    extends DefaultComponentMaintenanceImpl
+{
+  @Override
+  @TransactionalDeleteBlob
+  protected void deleteAssetTx(EntityId assetId) {
+    StorageTx tx = UnitOfWork.currentTx();
+    Asset asset = tx.findAsset(assetId, tx.findBucket(getRepository()));
+    if (asset == null) {
+      return;
+    }
+    String assetKind = asset.formatAttributes().get(P_ASSET_KIND, String.class);
+    super.deleteAssetTx(assetId);
+    if ("DEB".equals(assetKind)) {
+      try {
+        getRepository().facet(AptHostedFacetImpl.class)
+            .rebuildIndexes(new AptHostedFacetImpl.AssetChange(AssetAction.REMOVED, asset));
+      }
+      catch (IOException e) {
+        throw new UncheckedIOException(e);
+      }
+      catch (PGPException e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
 }

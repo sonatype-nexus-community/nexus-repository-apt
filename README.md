@@ -32,7 +32,6 @@
   # sudo su - nexus
   $ cd <nexus_dir>/bin
   $ ./nexus run
-  > bundle:install http://central.maven.org/maven2/org/bouncycastle/bcpg-jdk15on/1.52/bcpg-jdk15on-1.52.jar
   > bundle:install file:///tmp/nexus-repository-apt-1.0.1.jar
   > bundle:list
   ```

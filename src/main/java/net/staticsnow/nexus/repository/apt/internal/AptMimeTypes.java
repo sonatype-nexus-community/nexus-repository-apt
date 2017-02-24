@@ -15,11 +15,17 @@
 
 package net.staticsnow.nexus.repository.apt.internal;
 
-public class AptMimeTypes {
-	public static final String TEXT = "text/plain";
-	public static final String GZIP = "application/gzip";
-	public static final String BZIP = "application/bzip2";
-	public static final String SIGNATURE = "application/pgp-signature";
-	public static final String PUBLICKEY = "application/pgp";
-	public static final String PACKAGE = "application/vnd.debian.binary-package";
+public class AptMimeTypes
+{
+  public static final String TEXT = "text/plain";
+
+  public static final String GZIP = "application/gzip";
+
+  public static final String BZIP = "application/bzip2";
+
+  public static final String SIGNATURE = "application/pgp-signature";
+
+  public static final String PUBLICKEY = "application/pgp";
+
+  public static final String PACKAGE = "application/vnd.debian.binary-package";
 }

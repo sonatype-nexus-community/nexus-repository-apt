@@ -20,13 +20,15 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.sonatype.nexus.repository.Format;
-import org.sonatype.nexus.repository.security.RepositoryFormatSecurityConfigurationResource;
+import org.sonatype.nexus.repository.security.RepositoryFormatSecurityContributor;
 
 @Named
 @Singleton
-public class AptSecurityConfigurationResource extends RepositoryFormatSecurityConfigurationResource {
-	@Inject
-	public AptSecurityConfigurationResource(@Named(AptFormat.NAME) final Format format) {
-		super(format);
-	}
+public class AptFormatSecurityContributor
+    extends RepositoryFormatSecurityContributor
+{
+  @Inject
+  public AptFormatSecurityContributor(@Named(AptFormat.NAME) final Format format) {
+    super(format);
+  }
 }

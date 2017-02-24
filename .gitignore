@@ -1,5 +1,30 @@
-target/
-.project
+# Eclipse
 .classpath
+.project
 .settings/
+
+# Maven
+target/
+*.ser
+*.ec
+.mvn/timing.properties
+
+# Intellij
+*.ipr
+*.iml
+*.iws
+.idea/
+
+# OrientDB
+.orientdb_history
+
+# Other
+.DS_Store
+.clover
+*.log
+/*.rc
+atlassian-ide-plugin.xml
+dependency-reduced-pom.xml
+out
+
 vagrant/.vagrant/

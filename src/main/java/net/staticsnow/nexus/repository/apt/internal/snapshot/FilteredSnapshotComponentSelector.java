@@ -24,40 +24,44 @@ import java.util.Set;
 import net.staticsnow.nexus.repository.apt.internal.debian.ControlFile;
 import net.staticsnow.nexus.repository.apt.internal.debian.Release;
 
-public class FilteredSnapshotComponentSelector implements SnapshotComponentSelector {
-	
-	private final ControlFile settings;
-	
-	public FilteredSnapshotComponentSelector(ControlFile settings) {
-		this.settings = settings;
-	}
-	
-	@Override
-	public List<String> getArchitectures(Release release) {
-		Optional<Set<String>> settingsArchitectures = settings.getField("Architectures")
-				.map(s -> s.listValue())
-				.map(l -> new HashSet<>(l));
-		if (settingsArchitectures.isPresent()) {
-			Set<String> releaseArchitectures = new HashSet<>(release.getArchitectures());
-			releaseArchitectures.retainAll(settingsArchitectures.get());
-			return new ArrayList<>(releaseArchitectures);
-		} else {
-			return release.getArchitectures();
-		}
-	}
+public class FilteredSnapshotComponentSelector
+  implements SnapshotComponentSelector
+{
 
-	@Override
-	public List<String> getComponents(Release release) {
-		Optional<Set<String>> settingsComponents = settings.getField("Components")
-				.map(s -> s.listValue())
-				.map(l -> new HashSet<>(l));
-		if (settingsComponents.isPresent()) {
-			Set<String> releaseComponents = new HashSet<>(release.getComponents());
-			releaseComponents.retainAll(settingsComponents.get());
-			return new ArrayList<>(releaseComponents);
-		} else {
-			return release.getComponents();
-		}
-	}
+  private final ControlFile settings;
+
+  public FilteredSnapshotComponentSelector(ControlFile settings) {
+    this.settings = settings;
+  }
+
+  @Override
+  public List<String> getArchitectures(Release release) {
+    Optional<Set<String>> settingsArchitectures = settings.getField("Architectures")
+        .map(s -> s.listValue())
+        .map(l -> new HashSet<>(l));
+    if (settingsArchitectures.isPresent()) {
+      Set<String> releaseArchitectures = new HashSet<>(release.getArchitectures());
+      releaseArchitectures.retainAll(settingsArchitectures.get());
+      return new ArrayList<>(releaseArchitectures);
+    }
+    else {
+      return release.getArchitectures();
+    }
+  }
+
+  @Override
+  public List<String> getComponents(Release release) {
+    Optional<Set<String>> settingsComponents = settings.getField("Components")
+        .map(s -> s.listValue())
+        .map(l -> new HashSet<>(l));
+    if (settingsComponents.isPresent()) {
+      Set<String> releaseComponents = new HashSet<>(release.getComponents());
+      releaseComponents.retainAll(settingsComponents.get());
+      return new ArrayList<>(releaseComponents);
+    }
+    else {
+      return release.getComponents();
+    }
+  }
 
 }
