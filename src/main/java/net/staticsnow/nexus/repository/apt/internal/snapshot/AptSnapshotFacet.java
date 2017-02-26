@@ -21,9 +21,14 @@ import org.sonatype.nexus.repository.Facet;
 import org.sonatype.nexus.repository.view.Content;
 
 @Facet.Exposed
-public interface AptSnapshotFacet extends Facet {
-	public boolean isSnapshotableFile(String path);
-	public void createSnapshot(String id, SnapshotComponentSelector spec) throws IOException;
-	public Content getSnapshotFile(String id, String path) throws IOException;
-	public void deleteSnapshot(String id) throws IOException;
+public interface AptSnapshotFacet
+    extends Facet
+{
+  public boolean isSnapshotableFile(String path);
+
+  public void createSnapshot(String id, SnapshotComponentSelector spec) throws IOException;
+
+  public Content getSnapshotFile(String id, String path) throws IOException;
+
+  public void deleteSnapshot(String id) throws IOException;
 }

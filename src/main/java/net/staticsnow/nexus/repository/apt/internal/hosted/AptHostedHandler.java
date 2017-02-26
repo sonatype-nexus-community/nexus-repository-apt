@@ -36,48 +36,53 @@ import net.staticsnow.nexus.repository.apt.internal.snapshot.AptSnapshotHandler;
 
 @Named
 @Singleton
-public class AptHostedHandler extends ComponentSupport implements Handler {
-	@Override
-	public Response handle(Context context) throws Exception {
-		String path = assetPath(context);
-		String method = context.getRequest().getAction();
-		
-		AptFacet aptFacet = context.getRepository().facet(AptFacet.class);
-		AptHostedFacet hostedFacet = context.getRepository().facet(AptHostedFacet.class);
-		
-		switch (method) {
-		case GET:
-		case HEAD: {
-			return doGet(path, aptFacet);
-		}
-		
-		case POST: {
-			if (path.equals("rebuild-indexes")) {
-				hostedFacet.rebuildIndexes();
-				return HttpResponses.ok();
-			} else if (path.equals("")) {
-				hostedFacet.ingestAsset(context.getRequest().getPayload());
-				return HttpResponses.created();
-			} else {
-				return HttpResponses.methodNotAllowed(method, GET, HEAD);
-			}
-		}
-		
-		default:
-			return HttpResponses.methodNotAllowed(method, GET, HEAD, POST);
-		}
-	}
-	
-	private Response doGet(String path, AptFacet aptFacet) throws IOException {
-		Content content = aptFacet.get(path);
-		if (content == null) {
-			return HttpResponses.notFound(path);
-		}
-		return HttpResponses.ok(content);
-	}
+public class AptHostedHandler
+    extends ComponentSupport
+    implements Handler
+{
+  @Override
+  public Response handle(Context context) throws Exception {
+    String path = assetPath(context);
+    String method = context.getRequest().getAction();
 
-	private String assetPath(Context context) {
-		final AptSnapshotHandler.State snapshotState = context.getAttributes().require(AptSnapshotHandler.State.class);
-		return snapshotState.assetPath;
-	}
+    AptFacet aptFacet = context.getRepository().facet(AptFacet.class);
+    AptHostedFacet hostedFacet = context.getRepository().facet(AptHostedFacet.class);
+
+    switch (method) {
+      case GET:
+      case HEAD: {
+        return doGet(path, aptFacet);
+      }
+
+      case POST: {
+        if (path.equals("rebuild-indexes")) {
+          hostedFacet.rebuildIndexes();
+          return HttpResponses.ok();
+        }
+        else if (path.equals("")) {
+          hostedFacet.ingestAsset(context.getRequest().getPayload());
+          return HttpResponses.created();
+        }
+        else {
+          return HttpResponses.methodNotAllowed(method, GET, HEAD);
+        }
+      }
+
+      default:
+        return HttpResponses.methodNotAllowed(method, GET, HEAD, POST);
+    }
+  }
+
+  private Response doGet(String path, AptFacet aptFacet) throws IOException {
+    Content content = aptFacet.get(path);
+    if (content == null) {
+      return HttpResponses.notFound(path);
+    }
+    return HttpResponses.ok(content);
+  }
+
+  private String assetPath(Context context) {
+    final AptSnapshotHandler.State snapshotState = context.getAttributes().require(AptSnapshotHandler.State.class);
+    return snapshotState.assetPath;
+  }
 }

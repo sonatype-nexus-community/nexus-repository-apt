@@ -19,7 +19,9 @@ import java.util.List;
 
 import net.staticsnow.nexus.repository.apt.internal.debian.Release;
 
-public interface SnapshotComponentSelector {
-	public List<String> getArchitectures(Release release);
-	public List<String> getComponents(Release release);
+public interface SnapshotComponentSelector
+{
+  public List<String> getArchitectures(Release release);
+
+  public List<String> getComponents(Release release);
 }

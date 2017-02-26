@@ -30,30 +30,31 @@ import net.staticsnow.nexus.repository.apt.internal.snapshot.SnapshotItem;
 import net.staticsnow.nexus.repository.apt.internal.snapshot.SnapshotItem.ContentSpecifier;
 
 @Named
-public class AptHostedSnapshotFacet extends AptSnapshotFacetSupport {
-	@Override
-	protected List<SnapshotItem> fetchSnapshotItems(List<ContentSpecifier> specs) throws IOException {
-		try {
-			return specs.stream()
-					.map(spec -> getItem(spec))
-					.filter(item -> item != null)
-					.collect(Collectors.toList());
-		} catch (UncheckedIOException e) {
-			throw e.getCause();
-		}
-	}
-	
-	private SnapshotItem getItem(ContentSpecifier spec) {
-		try {
-			AptFacet apt = getRepository().facet(AptFacet.class);
-			Content content = apt.get(spec.path);
-			if (content == null) {
-				return null;
-			}
-			
-			return new SnapshotItem(spec, content);
-		} catch (IOException e) {
-			throw new UncheckedIOException(e);
-		}
-	}
+public class AptHostedSnapshotFacet
+    extends AptSnapshotFacetSupport
+{
+  @Override
+  protected List<SnapshotItem> fetchSnapshotItems(List<ContentSpecifier> specs) throws IOException {
+    try {
+      return specs.stream().map(spec -> getItem(spec)).filter(item -> item != null).collect(Collectors.toList());
+    }
+    catch (UncheckedIOException e) {
+      throw e.getCause();
+    }
+  }
+
+  private SnapshotItem getItem(ContentSpecifier spec) {
+    try {
+      AptFacet apt = getRepository().facet(AptFacet.class);
+      Content content = apt.get(spec.path);
+      if (content == null) {
+        return null;
+      }
+
+      return new SnapshotItem(spec, content);
+    }
+    catch (IOException e) {
+      throw new UncheckedIOException(e);
+    }
+  }
 }

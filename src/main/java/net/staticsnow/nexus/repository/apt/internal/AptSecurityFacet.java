@@ -22,9 +22,11 @@ import org.sonatype.nexus.repository.security.SecurityFacetSupport;
 import org.sonatype.nexus.security.SecurityHelper;
 
 @Named
-public class AptSecurityFacet extends SecurityFacetSupport {
-	@Inject
-	public AptSecurityFacet(SecurityHelper securityHelper, AptSecurityConfigurationResource securityResource) {
-		super(securityHelper, securityResource);
-	}
+public class AptSecurityFacet
+    extends SecurityFacetSupport
+{
+  @Inject
+  public AptSecurityFacet(SecurityHelper securityHelper, AptSecurityConfigurationResource securityResource) {
+    super(securityHelper, securityResource);
+  }
 }

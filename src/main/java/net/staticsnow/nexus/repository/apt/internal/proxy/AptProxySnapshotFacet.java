@@ -26,10 +26,13 @@ import net.staticsnow.nexus.repository.apt.internal.snapshot.SnapshotItem;
 import net.staticsnow.nexus.repository.apt.internal.snapshot.SnapshotItem.ContentSpecifier;
 
 @Named
-public class AptProxySnapshotFacet extends AptSnapshotFacetSupport implements AptSnapshotFacet {
-	@Override
-	protected List<SnapshotItem> fetchSnapshotItems(List<ContentSpecifier> specs) throws IOException {
-		AptProxyFacet proxyFacet = getRepository().facet(AptProxyFacet.class);
-		return proxyFacet.getSnapshotItems(specs);
-	}
+public class AptProxySnapshotFacet
+    extends AptSnapshotFacetSupport
+    implements AptSnapshotFacet
+{
+  @Override
+  protected List<SnapshotItem> fetchSnapshotItems(List<ContentSpecifier> specs) throws IOException {
+    AptProxyFacet proxyFacet = getRepository().facet(AptProxyFacet.class);
+    return proxyFacet.getSnapshotItems(specs);
+  }
 }

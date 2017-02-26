@@ -24,10 +24,12 @@ import org.sonatype.nexus.rapture.UiPluginDescriptorSupport;
 @Named
 @Singleton
 @Priority(Integer.MAX_VALUE - 200)
-public class UiPluginDescriptorImpl extends UiPluginDescriptorSupport {
-	public UiPluginDescriptorImpl() {
-		super("nexus-repository-apt");
-		setNamespace("NX.aptui");
-		setConfigClassName("NX.aptui.app.PluginConfig");
-	}
+public class UiPluginDescriptorImpl
+    extends UiPluginDescriptorSupport
+{
+  public UiPluginDescriptorImpl() {
+    super("nexus-repository-apt");
+    setNamespace("NX.aptui");
+    setConfigClassName("NX.aptui.app.PluginConfig");
+  }
 }

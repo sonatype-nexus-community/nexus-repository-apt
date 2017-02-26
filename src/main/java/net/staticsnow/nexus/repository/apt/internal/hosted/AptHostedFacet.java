@@ -82,308 +82,298 @@ import net.staticsnow.nexus.repository.apt.internal.gpg.AptSigningFacet;
 
 @Named
 @Facet.Exposed
-public class AptHostedFacet extends FacetSupport {
-	private static final String P_INDEX_SECTION = "index_section";
-	private static final String P_ARCHITECTURE = "architecture";
-	private static final String P_PACKAGE_NAME = "package_name";
-	private static final String P_PACKAGE_VERSION = "package_version";
+public class AptHostedFacet
+    extends FacetSupport
+{
+  private static final String P_INDEX_SECTION = "index_section";
+  private static final String P_ARCHITECTURE = "architecture";
+  private static final String P_PACKAGE_NAME = "package_name";
+  private static final String P_PACKAGE_VERSION = "package_version";
 
-	private static final String SELECT_HOSTED_ASSETS = "SELECT " +
-			"name, " +
-			"attributes.apt.index_section AS index_section, " +
-			"attributes.apt.architecture AS architecture " +
-			"FROM asset " +
-			"WHERE bucket=:bucket " +
-			"AND attributes.apt.asset_kind=:asset_kind";
-	
-	private static final String ASSETS_BY_PACKAGE_AND_ARCH = "attributes.apt.asset_kind=:asset_kind " +
-			"AND attributes.apt.package_name=:package_name " +
-			"AND attributes.apt.architecture=:architecture";
+  private static final String SELECT_HOSTED_ASSETS = "SELECT " + "name, "
+      + "attributes.apt.index_section AS index_section, " + "attributes.apt.architecture AS architecture "
+      + "FROM asset " + "WHERE bucket=:bucket " + "AND attributes.apt.asset_kind=:asset_kind";
 
-	static final String CONFIG_KEY = "aptHosted";
-	
-	static class Config {
-		public Integer assetHistoryLimit;
-	}
+  private static final String ASSETS_BY_PACKAGE_AND_ARCH = "attributes.apt.asset_kind=:asset_kind "
+      + "AND attributes.apt.package_name=:package_name " + "AND attributes.apt.architecture=:architecture";
 
-	private Config config;
-	
-	@Override
-	protected void doConfigure(final Configuration configuration) throws Exception {
-		config = facet(ConfigurationFacet.class).readSection(configuration, CONFIG_KEY, Config.class);
-	}
+  static final String CONFIG_KEY = "aptHosted";
 
-	@Override
-	protected void doDestroy() throws Exception {
-		config = null;
-	}
+  static class Config
+  {
+    public Integer assetHistoryLimit;
+  }
 
-	@Transactional(retryOn = { ONeedRetryException.class })
-	public void ingestAsset(Payload body) throws IOException, PGPException {
-		AptFacet aptFacet = getRepository().facet(AptFacet.class);
-		StorageTx tx = UnitOfWork.currentTx();
-		Bucket bucket = tx.findBucket(getRepository());
+  private Config config;
 
-		ControlFile control = null;
-		try (TempStreamSupplier supplier = new TempStreamSupplier(body.openInputStream());
-				ArArchiveInputStream is = new ArArchiveInputStream(supplier.get())) {
-			ArchiveEntry debEntry;
-			while ((debEntry = is.getNextEntry()) != null) {
-				InputStream controlStream;
-				switch (debEntry.getName()) {
-				case "control.tar":
-					controlStream = new CloseShieldInputStream(is);
-					break;
-				case "control.tar.gz":
-					controlStream = new GZIPInputStream(new CloseShieldInputStream(is));
-					break;
-				case "control.tar.xz":
-					controlStream = new XZCompressorInputStream(new CloseShieldInputStream(is));
-				default:
-					continue;
-				}
+  @Override
+  protected void doConfigure(final Configuration configuration) throws Exception {
+    config = facet(ConfigurationFacet.class).readSection(configuration, CONFIG_KEY, Config.class);
+  }
 
-				try (TarArchiveInputStream controlTarStream = new TarArchiveInputStream(controlStream)) {
-					ArchiveEntry tarEntry;
-					while ((tarEntry = controlTarStream.getNextEntry()) != null) {
-						if (tarEntry.getName().equals("control") || tarEntry.getName().equals("./control")) {
-							control = new ControlFileParser().parseControlFile(controlTarStream);
-						}
-					}
-				}
-			}
+  @Override
+  protected void doDestroy() throws Exception {
+    config = null;
+  }
 
-			if (control == null) {
-				throw new IllegalOperationException("Invalid Debian package supplied");
-			}
+  @Transactional(retryOn = { ONeedRetryException.class })
+  public void ingestAsset(Payload body) throws IOException, PGPException {
+    AptFacet aptFacet = getRepository().facet(AptFacet.class);
+    StorageTx tx = UnitOfWork.currentTx();
+    Bucket bucket = tx.findBucket(getRepository());
 
-			String name = control.getField("Package").map(f -> f.value).get();
-			String version = control.getField("Version").map(f -> f.value).get();
-			String architecture = control.getField("Architecture").map(f -> f.value).get();
+    ControlFile control = null;
+    try (TempStreamSupplier supplier = new TempStreamSupplier(body.openInputStream());
+        ArArchiveInputStream is = new ArArchiveInputStream(supplier.get())) {
+      ArchiveEntry debEntry;
+      while ((debEntry = is.getNextEntry()) != null) {
+        InputStream controlStream;
+        switch (debEntry.getName()) {
+          case "control.tar":
+            controlStream = new CloseShieldInputStream(is);
+            break;
+          case "control.tar.gz":
+            controlStream = new GZIPInputStream(new CloseShieldInputStream(is));
+            break;
+          case "control.tar.xz":
+            controlStream = new XZCompressorInputStream(new CloseShieldInputStream(is));
+          default:
+            continue;
+        }
 
-			String assetName = name + "_" + version + "_" + architecture + ".deb";
-			String assetPath = "pool/" + name.substring(0, 1) + "/" + name + "/" + assetName;
+        try (TarArchiveInputStream controlTarStream = new TarArchiveInputStream(controlStream)) {
+          ArchiveEntry tarEntry;
+          while ((tarEntry = controlTarStream.getNextEntry()) != null) {
+            if (tarEntry.getName().equals("control") || tarEntry.getName().equals("./control")) {
+              control = new ControlFileParser().parseControlFile(controlTarStream);
+            }
+          }
+        }
+      }
 
-			Content content = aptFacet.put(assetPath, new StreamPayload(() -> supplier.get(), body.getSize(), body.getContentType()));
-			Asset asset = Content.findAsset(tx, bucket, content);
-			String indexSection = buildIndexSection(control, asset.size(), asset.getChecksums(FacetHelper.hashAlgorithms), assetPath);
-			asset.formatAttributes().set(P_ARCHITECTURE, architecture);
-			asset.formatAttributes().set(P_PACKAGE_NAME, name);
-			asset.formatAttributes().set(P_PACKAGE_VERSION, version);
-			asset.formatAttributes().set(P_INDEX_SECTION, indexSection);
-			asset.formatAttributes().set(P_ASSET_KIND, "DEB");
-			tx.saveAsset(asset);
-			
-			List<AssetChange> changes = new ArrayList<>();
-			changes.add(new AssetChange(AssetAction.ADDED, asset));
-			
-			for (Asset removed : selectOldPackagesToRemove(name, architecture)) {
-				tx.deleteAsset(removed);
-				changes.add(new AssetChange(AssetAction.REMOVED, removed));
-			}
-			
-			rebuildIndexesInTransaction(tx, changes.stream().toArray(AssetChange[]::new));
-		}
-	}
-	
-	@Transactional(retryOn = { ONeedRetryException.class })
-	public void rebuildIndexes(AssetChange... changes) throws IOException, PGPException {
-		StorageTx tx = UnitOfWork.currentTx();
-		rebuildIndexesInTransaction(tx, changes);
-	}
+      if (control == null) {
+        throw new IllegalOperationException("Invalid Debian package supplied");
+      }
 
-	private void rebuildIndexesInTransaction(StorageTx tx, AssetChange... changes) throws IOException, PGPException {
-		AptFacet aptFacet = getRepository().facet(AptFacet.class);
-		AptSigningFacet signingFacet = getRepository().facet(AptSigningFacet.class);
-		Bucket bucket = tx.findBucket(getRepository());
+      String name = control.getField("Package").map(f -> f.value).get();
+      String version = control.getField("Version").map(f -> f.value).get();
+      String architecture = control.getField("Architecture").map(f -> f.value).get();
 
-		StringBuilder sha256Builder = new StringBuilder();
-		StringBuilder md5Builder = new StringBuilder();
-		String releaseFile;
-		try (CompressingTempFileStore store = buildPackageIndexes(tx, bucket, changes)) {
-			for (Map.Entry<String, CompressingTempFileStore.FileMetadata> entry : store.getFiles().entrySet()) {
-				Content plainContent = aptFacet.put(
-						packageIndexName(entry.getKey(), ""),
-						new StreamPayload(entry.getValue().plainSupplier(), entry.getValue().plainSize(), AptMimeTypes.TEXT));
-				addSignatureItem(md5Builder, MD5, plainContent, packageRelativeIndexName(entry.getKey(), ""));
-				addSignatureItem(sha256Builder, SHA256, plainContent, packageRelativeIndexName(entry.getKey(), ""));
+      String assetName = name + "_" + version + "_" + architecture + ".deb";
+      String assetPath = "pool/" + name.substring(0, 1) + "/" + name + "/" + assetName;
 
-				Content gzContent = aptFacet.put(
-						packageIndexName(entry.getKey(), ".gz"), 
-						new StreamPayload(entry.getValue().gzSupplier(), entry.getValue().bzSize(), AptMimeTypes.GZIP));
-				addSignatureItem(md5Builder, MD5, gzContent, packageRelativeIndexName(entry.getKey(), ".gz"));
-				addSignatureItem(sha256Builder, SHA256, gzContent, packageRelativeIndexName(entry.getKey(), ".gz"));
+      Content content = aptFacet.put(assetPath,
+          new StreamPayload(() -> supplier.get(), body.getSize(), body.getContentType()));
+      Asset asset = Content.findAsset(tx, bucket, content);
+      String indexSection = buildIndexSection(control, asset.size(), asset.getChecksums(FacetHelper.hashAlgorithms),
+          assetPath);
+      asset.formatAttributes().set(P_ARCHITECTURE, architecture);
+      asset.formatAttributes().set(P_PACKAGE_NAME, name);
+      asset.formatAttributes().set(P_PACKAGE_VERSION, version);
+      asset.formatAttributes().set(P_INDEX_SECTION, indexSection);
+      asset.formatAttributes().set(P_ASSET_KIND, "DEB");
+      tx.saveAsset(asset);
 
-				Content bzContent = aptFacet.put(
-						packageIndexName(entry.getKey(), ".bz2"),
-						new StreamPayload(entry.getValue().bzSupplier(), entry.getValue().bzSize(), AptMimeTypes.BZIP));
-				addSignatureItem(md5Builder, MD5, bzContent, packageRelativeIndexName(entry.getKey(), ".bz2"));
-				addSignatureItem(sha256Builder, SHA256, bzContent, packageRelativeIndexName(entry.getKey(), ".bz2"));
-			}
+      List<AssetChange> changes = new ArrayList<>();
+      changes.add(new AssetChange(AssetAction.ADDED, asset));
 
-			releaseFile = buildReleaseFile(
-					aptFacet.getDistribution(), 
-					store.getFiles().keySet(), 
-					md5Builder.toString(), 
-					sha256Builder.toString());
-		}
+      for (Asset removed : selectOldPackagesToRemove(name, architecture)) {
+        tx.deleteAsset(removed);
+        changes.add(new AssetChange(AssetAction.REMOVED, removed));
+      }
 
-		aptFacet.put(releaseIndexName("Release"), new BytesPayload(releaseFile.getBytes(Charsets.UTF_8), AptMimeTypes.TEXT));
-		byte[] inRelease = signingFacet.signInline(releaseFile);
-		aptFacet.put(releaseIndexName("InRelease"), new BytesPayload(inRelease, AptMimeTypes.TEXT));
-		byte[] releaseGpg = signingFacet.signExternal(releaseFile);
-		aptFacet.put(releaseIndexName("Release.gpg"), new BytesPayload(releaseGpg, AptMimeTypes.SIGNATURE));
-	}
+      rebuildIndexesInTransaction(tx, changes.stream().toArray(AssetChange[]::new));
+    }
+  }
 
-	private String buildReleaseFile(String distribution, Collection<String> architectures, String md5, String sha256) {
-		Paragraph p = new Paragraph(Arrays.asList(
-				new ControlFile.ControlField("Suite", distribution),
-				new ControlFile.ControlField("Codename", distribution),
-				new ControlFile.ControlField("Components", "main"),
-				new ControlFile.ControlField("Date", DateUtils.formatDate(new Date())),
-				new ControlFile.ControlField("Architectures", architectures.stream().collect(Collectors.joining(" "))),
-				new ControlFile.ControlField("SHA256", sha256),
-				new ControlFile.ControlField("MD5Sum", md5)
-				));
-		return p.toString();
-	}
+  @Transactional(retryOn = { ONeedRetryException.class })
+  public void rebuildIndexes(AssetChange... changes) throws IOException, PGPException {
+    StorageTx tx = UnitOfWork.currentTx();
+    rebuildIndexesInTransaction(tx, changes);
+  }
 
-	private CompressingTempFileStore buildPackageIndexes(StorageTx tx, Bucket bucket, AssetChange... changes) throws IOException {
-		CompressingTempFileStore result = new CompressingTempFileStore();
-		Map<String, Writer> streams = new HashMap<>();
-		boolean ok = false;
-		try {
-			Map<String, Object> sqlParams = new HashMap<>();
-			sqlParams.put(P_BUCKET, AttachedEntityHelper.id(bucket));
-			sqlParams.put(P_ASSET_KIND, "DEB");
+  private void rebuildIndexesInTransaction(StorageTx tx, AssetChange... changes) throws IOException, PGPException {
+    AptFacet aptFacet = getRepository().facet(AptFacet.class);
+    AptSigningFacet signingFacet = getRepository().facet(AptSigningFacet.class);
+    Bucket bucket = tx.findBucket(getRepository());
 
-			Set<String> excludeNames = Arrays.stream(changes)
-					.filter(change -> change.action == AssetAction.REMOVED)
-					.map(change -> change.asset.name())
-					.collect(Collectors.toSet());
+    StringBuilder sha256Builder = new StringBuilder();
+    StringBuilder md5Builder = new StringBuilder();
+    String releaseFile;
+    try (CompressingTempFileStore store = buildPackageIndexes(tx, bucket, changes)) {
+      for (Map.Entry<String, CompressingTempFileStore.FileMetadata> entry : store.getFiles().entrySet()) {
+        Content plainContent = aptFacet.put(packageIndexName(entry.getKey(), ""),
+            new StreamPayload(entry.getValue().plainSupplier(), entry.getValue().plainSize(), AptMimeTypes.TEXT));
+        addSignatureItem(md5Builder, MD5, plainContent, packageRelativeIndexName(entry.getKey(), ""));
+        addSignatureItem(sha256Builder, SHA256, plainContent, packageRelativeIndexName(entry.getKey(), ""));
 
-			for (ODocument d : tx.browse(SELECT_HOSTED_ASSETS, sqlParams)) {
-				String name = d.<String>field(P_NAME, String.class);
-				if (excludeNames.contains(name)) {
-					continue;
-				}
-				String arch = d.<String>field(P_ARCHITECTURE, String.class);
-				String indexSection = d.<String>field(P_INDEX_SECTION, String.class);
-				Writer out = streams.computeIfAbsent(arch, a -> result.openOutput(a));
-				out.write(indexSection);
-				out.write("\n\n");
-			}
+        Content gzContent = aptFacet.put(packageIndexName(entry.getKey(), ".gz"),
+            new StreamPayload(entry.getValue().gzSupplier(), entry.getValue().bzSize(), AptMimeTypes.GZIP));
+        addSignatureItem(md5Builder, MD5, gzContent, packageRelativeIndexName(entry.getKey(), ".gz"));
+        addSignatureItem(sha256Builder, SHA256, gzContent, packageRelativeIndexName(entry.getKey(), ".gz"));
 
-			List<Asset> addAssets = Arrays.stream(changes)
-					.filter(change -> change.action == AssetAction.ADDED)
-					.map(change -> change.asset)
-					.collect(Collectors.toList());
+        Content bzContent = aptFacet.put(packageIndexName(entry.getKey(), ".bz2"),
+            new StreamPayload(entry.getValue().bzSupplier(), entry.getValue().bzSize(), AptMimeTypes.BZIP));
+        addSignatureItem(md5Builder, MD5, bzContent, packageRelativeIndexName(entry.getKey(), ".bz2"));
+        addSignatureItem(sha256Builder, SHA256, bzContent, packageRelativeIndexName(entry.getKey(), ".bz2"));
+      }
 
-			//HACK: tx.browse won't see changes in the current transaction, so we have to manually add these in here
-			for (Asset asset : addAssets) {
-				String arch = asset.formatAttributes().get(P_ARCHITECTURE, String.class);
-				String indexSection = asset.formatAttributes().get(P_INDEX_SECTION, String.class);
-				Writer out = streams.computeIfAbsent(arch, a -> result.openOutput(a));
-				out.write(indexSection);
-				out.write("\n\n");
-			}
-			ok = true;
-		} finally {
-			for (Writer w : streams.values()) {
-				IOUtils.closeQuietly(w);
-			}
+      releaseFile = buildReleaseFile(aptFacet.getDistribution(), store.getFiles().keySet(), md5Builder.toString(),
+          sha256Builder.toString());
+    }
 
-			if (!ok) {
-				result.close();
-			}
-		}
-		return result;
-	}
+    aptFacet.put(releaseIndexName("Release"),
+        new BytesPayload(releaseFile.getBytes(Charsets.UTF_8), AptMimeTypes.TEXT));
+    byte[] inRelease = signingFacet.signInline(releaseFile);
+    aptFacet.put(releaseIndexName("InRelease"), new BytesPayload(inRelease, AptMimeTypes.TEXT));
+    byte[] releaseGpg = signingFacet.signExternal(releaseFile);
+    aptFacet.put(releaseIndexName("Release.gpg"), new BytesPayload(releaseGpg, AptMimeTypes.SIGNATURE));
+  }
 
-	private String buildIndexSection(ControlFile cf, long size, Map<HashAlgorithm, HashCode> hashes, String assetPath) {
-		Paragraph modified = cf.getParagraphs().get(0).withFields(Arrays.asList(
-				new ControlFile.ControlField("Filename", assetPath),
-				new ControlFile.ControlField("Size", Long.toString(size)),
-				new ControlFile.ControlField("MD5Sum", hashes.get(MD5).toString()),
-				new ControlFile.ControlField("SHA1", hashes.get(SHA1).toString()),
-				new ControlFile.ControlField("SHA256", hashes.get(SHA256).toString())
-				));
-		return modified.toString();
-	}
-	
-	private List<Asset> selectOldPackagesToRemove(String packageName, String arch) throws IOException, PGPException {
-		if (config.assetHistoryLimit == null) {
-			return Collections.emptyList();
-		}
-		int count = config.assetHistoryLimit;
-		StorageTx tx = UnitOfWork.currentTx();
-		Map<String, Object> sqlParams = new HashMap<>();
-		sqlParams.put(P_PACKAGE_NAME, packageName);
-		sqlParams.put(P_ARCHITECTURE, arch);
-		sqlParams.put(P_ASSET_KIND, "DEB");
-		Iterable<Asset> assets = tx.findAssets(ASSETS_BY_PACKAGE_AND_ARCH, sqlParams, Collections.singleton(getRepository()), "");
-		List<Asset> removals = new ArrayList<>();
-		Map<String, List<Asset>> assetsByArch = StreamSupport.stream(assets.spliterator(), false).collect(Collectors.groupingBy(a -> a.formatAttributes().get(P_ARCHITECTURE, String.class)));
-		for (Map.Entry<String, List<Asset>> entry : assetsByArch.entrySet()) {
-			if (entry.getValue().size() <= count) {
-				continue;
-			}
-			
-			int trimCount = entry.getValue().size() - count;
-			Set<String> keepVersions = entry.getValue().stream()
-					.map(a -> new Version(a.formatAttributes().get(P_PACKAGE_VERSION, String.class)))
-					.sorted()
-					.skip(trimCount)
-					.map(v -> v.toString())
-					.collect(Collectors.toSet());
-			
-			entry.getValue().stream()
-				.filter(a -> !keepVersions.contains(a.formatAttributes().get(P_PACKAGE_VERSION, String.class)))
-				.forEach((item) -> removals.add(item));
-		}
-		
-		return removals;
-	}
+  private String buildReleaseFile(String distribution, Collection<String> architectures, String md5, String sha256) {
+    Paragraph p = new Paragraph(Arrays.asList(new ControlFile.ControlField("Suite", distribution),
+        new ControlFile.ControlField("Codename", distribution), new ControlFile.ControlField("Components", "main"),
+        new ControlFile.ControlField("Date", DateUtils.formatDate(new Date())),
+        new ControlFile.ControlField("Architectures", architectures.stream().collect(Collectors.joining(" "))),
+        new ControlFile.ControlField("SHA256", sha256), new ControlFile.ControlField("MD5Sum", md5)));
+    return p.toString();
+  }
 
-	private String releaseIndexName(String name) {
-		AptFacet aptFacet = getRepository().facet(AptFacet.class);
-		String dist = aptFacet.getDistribution();
-		return "dists/" + dist + "/" + name;
-	}
+  private CompressingTempFileStore buildPackageIndexes(StorageTx tx, Bucket bucket, AssetChange... changes)
+      throws IOException
+  {
+    CompressingTempFileStore result = new CompressingTempFileStore();
+    Map<String, Writer> streams = new HashMap<>();
+    boolean ok = false;
+    try {
+      Map<String, Object> sqlParams = new HashMap<>();
+      sqlParams.put(P_BUCKET, AttachedEntityHelper.id(bucket));
+      sqlParams.put(P_ASSET_KIND, "DEB");
 
-	private String packageIndexName(String arch, String ext) {
-		AptFacet aptFacet = getRepository().facet(AptFacet.class);
-		String dist = aptFacet.getDistribution();
-		return "dists/" + dist + "/main/binary-" + arch + "/Packages" + ext;
-	}
+      Set<String> excludeNames = Arrays.stream(changes).filter(change -> change.action == AssetAction.REMOVED)
+          .map(change -> change.asset.name()).collect(Collectors.toSet());
 
-	private String packageRelativeIndexName(String arch, String ext) {
-		return "main/binary-" + arch + "/Packages" + ext;
-	}
+      for (ODocument d : tx.browse(SELECT_HOSTED_ASSETS, sqlParams)) {
+        String name = d.<String> field(P_NAME, String.class);
+        if (excludeNames.contains(name)) {
+          continue;
+        }
+        String arch = d.<String> field(P_ARCHITECTURE, String.class);
+        String indexSection = d.<String> field(P_INDEX_SECTION, String.class);
+        Writer out = streams.computeIfAbsent(arch, a -> result.openOutput(a));
+        out.write(indexSection);
+        out.write("\n\n");
+      }
 
-	private void addSignatureItem(StringBuilder builder, HashAlgorithm algo, Content content, String filename) {
-		Map<HashAlgorithm, HashCode> hashMap = content.getAttributes().get(Content.CONTENT_HASH_CODES_MAP, Content.T_CONTENT_HASH_CODES_MAP);
-		builder.append("\n ");
-		builder.append(hashMap.get(algo).toString());
-		builder.append(" ");
-		builder.append(content.getSize());
-		builder.append(" ");
-		builder.append(filename);
-	}
+      List<Asset> addAssets = Arrays.stream(changes).filter(change -> change.action == AssetAction.ADDED)
+          .map(change -> change.asset).collect(Collectors.toList());
 
-	public static enum AssetAction {
-		ADDED,
-		REMOVED
-	}
+      // HACK: tx.browse won't see changes in the current transaction, so we have to manually add these in here
+      for (Asset asset : addAssets) {
+        String arch = asset.formatAttributes().get(P_ARCHITECTURE, String.class);
+        String indexSection = asset.formatAttributes().get(P_INDEX_SECTION, String.class);
+        Writer out = streams.computeIfAbsent(arch, a -> result.openOutput(a));
+        out.write(indexSection);
+        out.write("\n\n");
+      }
+      ok = true;
+    }
+    finally {
+      for (Writer w : streams.values()) {
+        IOUtils.closeQuietly(w);
+      }
 
-	public static class AssetChange {
-		public final AssetAction action;
-		public final Asset asset;
+      if (!ok) {
+        result.close();
+      }
+    }
+    return result;
+  }
 
-		public AssetChange(AssetAction action, Asset asset) {
-			super();
-			this.action = action;
-			this.asset = asset;
-		}
-	}
+  private String buildIndexSection(ControlFile cf, long size, Map<HashAlgorithm, HashCode> hashes, String assetPath) {
+    Paragraph modified = cf.getParagraphs().get(0)
+        .withFields(Arrays.asList(new ControlFile.ControlField("Filename", assetPath),
+            new ControlFile.ControlField("Size", Long.toString(size)),
+            new ControlFile.ControlField("MD5Sum", hashes.get(MD5).toString()),
+            new ControlFile.ControlField("SHA1", hashes.get(SHA1).toString()),
+            new ControlFile.ControlField("SHA256", hashes.get(SHA256).toString())));
+    return modified.toString();
+  }
+
+  private List<Asset> selectOldPackagesToRemove(String packageName, String arch) throws IOException, PGPException {
+    if (config.assetHistoryLimit == null) {
+      return Collections.emptyList();
+    }
+    int count = config.assetHistoryLimit;
+    StorageTx tx = UnitOfWork.currentTx();
+    Map<String, Object> sqlParams = new HashMap<>();
+    sqlParams.put(P_PACKAGE_NAME, packageName);
+    sqlParams.put(P_ARCHITECTURE, arch);
+    sqlParams.put(P_ASSET_KIND, "DEB");
+    Iterable<Asset> assets = tx.findAssets(ASSETS_BY_PACKAGE_AND_ARCH, sqlParams,
+        Collections.singleton(getRepository()), "");
+    List<Asset> removals = new ArrayList<>();
+    Map<String, List<Asset>> assetsByArch = StreamSupport.stream(assets.spliterator(), false)
+        .collect(Collectors.groupingBy(a -> a.formatAttributes().get(P_ARCHITECTURE, String.class)));
+    for (Map.Entry<String, List<Asset>> entry : assetsByArch.entrySet()) {
+      if (entry.getValue().size() <= count) {
+        continue;
+      }
+
+      int trimCount = entry.getValue().size() - count;
+      Set<String> keepVersions = entry.getValue().stream()
+          .map(a -> new Version(a.formatAttributes().get(P_PACKAGE_VERSION, String.class))).sorted().skip(trimCount)
+          .map(v -> v.toString()).collect(Collectors.toSet());
+
+      entry.getValue().stream()
+          .filter(a -> !keepVersions.contains(a.formatAttributes().get(P_PACKAGE_VERSION, String.class)))
+          .forEach((item) -> removals.add(item));
+    }
+
+    return removals;
+  }
+
+  private String releaseIndexName(String name) {
+    AptFacet aptFacet = getRepository().facet(AptFacet.class);
+    String dist = aptFacet.getDistribution();
+    return "dists/" + dist + "/" + name;
+  }
+
+  private String packageIndexName(String arch, String ext) {
+    AptFacet aptFacet = getRepository().facet(AptFacet.class);
+    String dist = aptFacet.getDistribution();
+    return "dists/" + dist + "/main/binary-" + arch + "/Packages" + ext;
+  }
+
+  private String packageRelativeIndexName(String arch, String ext) {
+    return "main/binary-" + arch + "/Packages" + ext;
+  }
+
+  private void addSignatureItem(StringBuilder builder, HashAlgorithm algo, Content content, String filename) {
+    Map<HashAlgorithm, HashCode> hashMap = content.getAttributes().get(Content.CONTENT_HASH_CODES_MAP,
+        Content.T_CONTENT_HASH_CODES_MAP);
+    builder.append("\n ");
+    builder.append(hashMap.get(algo).toString());
+    builder.append(" ");
+    builder.append(content.getSize());
+    builder.append(" ");
+    builder.append(filename);
+  }
+
+  public static enum AssetAction
+  {
+    ADDED, REMOVED
+  }
+
+  public static class AssetChange
+  {
+    public final AssetAction action;
+    public final Asset asset;
+
+    public AssetChange(AssetAction action, Asset asset) {
+      super();
+      this.action = action;
+      this.asset = asset;
+    }
+  }
 }

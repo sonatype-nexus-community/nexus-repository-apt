@@ -22,10 +22,12 @@ import org.sonatype.nexus.repository.Format;
 
 @Named(AptFormat.NAME)
 @Singleton
-public class AptFormat extends Format {
-	public static final String NAME = "apt";
-	
-	public AptFormat() {
-		super(NAME);
-	}
+public class AptFormat
+    extends Format
+{
+  public static final String NAME = "apt";
+
+  public AptFormat() {
+    super(NAME);
+  }
 }

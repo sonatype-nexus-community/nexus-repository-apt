@@ -24,9 +24,11 @@ import org.sonatype.nexus.repository.security.RepositoryFormatSecurityConfigurat
 
 @Named
 @Singleton
-public class AptSecurityConfigurationResource extends RepositoryFormatSecurityConfigurationResource {
-	@Inject
-	public AptSecurityConfigurationResource(@Named(AptFormat.NAME) final Format format) {
-		super(format);
-	}
+public class AptSecurityConfigurationResource
+    extends RepositoryFormatSecurityConfigurationResource
+{
+  @Inject
+  public AptSecurityConfigurationResource(@Named(AptFormat.NAME) final Format format) {
+    super(format);
+  }
 }

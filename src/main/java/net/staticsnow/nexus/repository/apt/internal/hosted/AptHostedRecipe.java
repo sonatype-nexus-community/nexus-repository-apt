@@ -52,110 +52,101 @@ import net.staticsnow.nexus.repository.apt.internal.snapshot.AptSnapshotHandler;
 
 @Named(AptHostedRecipe.NAME)
 @Singleton
-public class AptHostedRecipe extends RecipeSupport {
+public class AptHostedRecipe
+    extends RecipeSupport
+{
 
-	public static final String NAME = "apt-hosted";
+  public static final String NAME = "apt-hosted";
 
-	@Inject
-	Provider<AptSecurityFacet> securityFacet;
+  @Inject
+  Provider<AptSecurityFacet> securityFacet;
 
-	@Inject
-	Provider<ConfigurableViewFacet> viewFacet;
+  @Inject
+  Provider<ConfigurableViewFacet> viewFacet;
 
-	@Inject
-	Provider<AptFacetImpl> aptFacet;
-	
-	@Inject
-	Provider<AptHostedFacet> aptHostedFacet;
-	
-	@Inject
-	Provider<AptSigningFacet> aptSigningFacet;
+  @Inject
+  Provider<AptFacetImpl> aptFacet;
 
-	@Inject
-	Provider<AptHostedSnapshotFacet> snapshotFacet;
-	
-	@Inject
-	Provider<StorageFacet> storageFacet;
+  @Inject
+  Provider<AptHostedFacet> aptHostedFacet;
 
-	@Inject
-	Provider<AttributesFacet> attributesFacet;
+  @Inject
+  Provider<AptSigningFacet> aptSigningFacet;
 
-	@Inject
-	Provider<AptHostedComponentMaintenanceFacet> componentMaintenance;
+  @Inject
+  Provider<AptHostedSnapshotFacet> snapshotFacet;
 
-	@Inject
-	Provider<SearchFacet> searchFacet;
+  @Inject
+  Provider<StorageFacet> storageFacet;
 
-	@Inject
-	ExceptionHandler exceptionHandler;
+  @Inject
+  Provider<AttributesFacet> attributesFacet;
 
-	@Inject
-	TimingHandler timingHandler;
+  @Inject
+  Provider<AptHostedComponentMaintenanceFacet> componentMaintenance;
 
-	@Inject
-	SecurityHandler securityHandler;
+  @Inject
+  Provider<SearchFacet> searchFacet;
 
-	@Inject
-	PartialFetchHandler partialFetchHandler;
+  @Inject
+  ExceptionHandler exceptionHandler;
 
-	@Inject
-	UnitOfWorkHandler unitOfWorkHandler;
+  @Inject
+  TimingHandler timingHandler;
 
-	@Inject
-	AptHostedHandler hostedHandler;
+  @Inject
+  SecurityHandler securityHandler;
 
-	@Inject
-	ConditionalRequestHandler conditionalRequestHandler;
+  @Inject
+  PartialFetchHandler partialFetchHandler;
 
-	@Inject
-	ContentHeadersHandler contentHeadersHandler;
-	
-	@Inject 
-	AptSnapshotHandler snapshotHandler;
-	
-	@Inject
-	AptSigningHandler signingHandler;
+  @Inject
+  UnitOfWorkHandler unitOfWorkHandler;
 
-	@Inject
-	public AptHostedRecipe(
-			@Named(HostedType.NAME) Type type, 
-			@Named(AptFormat.NAME) Format format) {
-		super(type, format);
-	}
+  @Inject
+  AptHostedHandler hostedHandler;
 
-	@Override
-	public void apply(Repository repository) throws Exception {
-		repository.attach(securityFacet.get());
-		repository.attach(configure(viewFacet.get()));
-		repository.attach(storageFacet.get());
-		repository.attach(aptFacet.get());
-		repository.attach(aptHostedFacet.get());
-		repository.attach(aptSigningFacet.get());
-		repository.attach(snapshotFacet.get());
-		repository.attach(attributesFacet.get());
-		repository.attach(componentMaintenance.get());
-		repository.attach(searchFacet.get());
-	}
+  @Inject
+  ConditionalRequestHandler conditionalRequestHandler;
 
-	private ViewFacet configure(final ConfigurableViewFacet facet) {
-		Router.Builder builder = new Router.Builder();
+  @Inject
+  ContentHeadersHandler contentHeadersHandler;
 
-		builder.route(new Route.Builder()
-				.matcher(new AlwaysMatcher())
-				.handler(timingHandler)
-				.handler(securityHandler)
-				.handler(exceptionHandler)
-				.handler(conditionalRequestHandler)
-				.handler(partialFetchHandler)
-				.handler(contentHeadersHandler)
-				.handler(unitOfWorkHandler)
-				.handler(snapshotHandler)
-				.handler(signingHandler)
-				.handler(hostedHandler)
-				.create());
-		
-		builder.defaultHandlers(notFound());
-		facet.configure(builder.create());
-		return facet;
-	}
+  @Inject
+  AptSnapshotHandler snapshotHandler;
+
+  @Inject
+  AptSigningHandler signingHandler;
+
+  @Inject
+  public AptHostedRecipe(@Named(HostedType.NAME) Type type, @Named(AptFormat.NAME) Format format) {
+    super(type, format);
+  }
+
+  @Override
+  public void apply(Repository repository) throws Exception {
+    repository.attach(securityFacet.get());
+    repository.attach(configure(viewFacet.get()));
+    repository.attach(storageFacet.get());
+    repository.attach(aptFacet.get());
+    repository.attach(aptHostedFacet.get());
+    repository.attach(aptSigningFacet.get());
+    repository.attach(snapshotFacet.get());
+    repository.attach(attributesFacet.get());
+    repository.attach(componentMaintenance.get());
+    repository.attach(searchFacet.get());
+  }
+
+  private ViewFacet configure(final ConfigurableViewFacet facet) {
+    Router.Builder builder = new Router.Builder();
+
+    builder.route(new Route.Builder().matcher(new AlwaysMatcher()).handler(timingHandler).handler(securityHandler)
+        .handler(exceptionHandler).handler(conditionalRequestHandler).handler(partialFetchHandler)
+        .handler(contentHeadersHandler).handler(unitOfWorkHandler).handler(snapshotHandler).handler(signingHandler)
+        .handler(hostedHandler).create());
+
+    builder.defaultHandlers(notFound());
+    facet.configure(builder.create());
+    return facet;
+  }
 }

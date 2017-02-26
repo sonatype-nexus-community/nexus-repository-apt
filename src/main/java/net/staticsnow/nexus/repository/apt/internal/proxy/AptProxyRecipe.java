@@ -56,118 +56,109 @@ import net.staticsnow.nexus.repository.apt.internal.snapshot.AptSnapshotHandler;
 
 @Named(AptProxyRecipe.NAME)
 @Singleton
-public class AptProxyRecipe extends RecipeSupport {
+public class AptProxyRecipe
+    extends RecipeSupport
+{
 
-	public static final String NAME = "apt-proxy";
+  public static final String NAME = "apt-proxy";
 
-	@Inject
-	Provider<AptSecurityFacet> securityFacet;
+  @Inject
+  Provider<AptSecurityFacet> securityFacet;
 
-	@Inject
-	Provider<ConfigurableViewFacet> viewFacet;
+  @Inject
+  Provider<ConfigurableViewFacet> viewFacet;
 
-	@Inject
-	Provider<HttpClientFacet> httpClientFacet;
+  @Inject
+  Provider<HttpClientFacet> httpClientFacet;
 
-	@Inject
-	Provider<NegativeCacheFacet> negativeCacheFacet;
+  @Inject
+  Provider<NegativeCacheFacet> negativeCacheFacet;
 
-	@Inject
-	Provider<AptProxyFacet> proxyFacet;
-	
-	@Inject
-	Provider<AptProxySnapshotFacet> proxySnapshotFacet;
+  @Inject
+  Provider<AptProxyFacet> proxyFacet;
 
-	@Inject
-	Provider<AptFacetImpl> aptFacet;
+  @Inject
+  Provider<AptProxySnapshotFacet> proxySnapshotFacet;
 
-	@Inject
-	Provider<StorageFacet> storageFacet;
+  @Inject
+  Provider<AptFacetImpl> aptFacet;
 
-	@Inject
-	Provider<AttributesFacet> attributesFacet;
+  @Inject
+  Provider<StorageFacet> storageFacet;
 
-	@Inject
-	Provider<SingleAssetComponentMaintenance> componentMaintenance;
+  @Inject
+  Provider<AttributesFacet> attributesFacet;
 
-	@Inject
-	Provider<SearchFacet> searchFacet;
+  @Inject
+  Provider<SingleAssetComponentMaintenance> componentMaintenance;
 
-	@Inject
-	Provider<PurgeUnusedFacet> purgeUnusedFacet;
+  @Inject
+  Provider<SearchFacet> searchFacet;
 
-	@Inject
-	ExceptionHandler exceptionHandler;
+  @Inject
+  Provider<PurgeUnusedFacet> purgeUnusedFacet;
 
-	@Inject
-	TimingHandler timingHandler;
+  @Inject
+  ExceptionHandler exceptionHandler;
 
-	@Inject
-	SecurityHandler securityHandler;
+  @Inject
+  TimingHandler timingHandler;
 
-	@Inject
-	NegativeCacheHandler negativeCacheHandler;
+  @Inject
+  SecurityHandler securityHandler;
 
-	@Inject
-	PartialFetchHandler partialFetchHandler;
+  @Inject
+  NegativeCacheHandler negativeCacheHandler;
 
-	@Inject
-	UnitOfWorkHandler unitOfWorkHandler;
+  @Inject
+  PartialFetchHandler partialFetchHandler;
 
-	@Inject
-	ProxyHandler proxyHandler;
+  @Inject
+  UnitOfWorkHandler unitOfWorkHandler;
 
-	@Inject
-	ConditionalRequestHandler conditionalRequestHandler;
+  @Inject
+  ProxyHandler proxyHandler;
 
-	@Inject
-	ContentHeadersHandler contentHeadersHandler;
-	
-	@Inject 
-	AptSnapshotHandler snapshotHandler;
+  @Inject
+  ConditionalRequestHandler conditionalRequestHandler;
 
-	@Inject
-	public AptProxyRecipe(
-			@Named(ProxyType.NAME) Type type, 
-			@Named(AptFormat.NAME) Format format) {
-		super(type, format);
-	}
+  @Inject
+  ContentHeadersHandler contentHeadersHandler;
 
-	@Override
-	public void apply(Repository repository) throws Exception {
-		repository.attach(securityFacet.get());
-		repository.attach(configure(viewFacet.get()));
-		repository.attach(httpClientFacet.get());
-		repository.attach(negativeCacheFacet.get());
-		repository.attach(proxyFacet.get());
-		repository.attach(proxySnapshotFacet.get());
-		repository.attach(aptFacet.get());
-		repository.attach(storageFacet.get());
-		repository.attach(attributesFacet.get());
-		repository.attach(componentMaintenance.get());
-		repository.attach(searchFacet.get());
-		repository.attach(purgeUnusedFacet.get());
-	}
+  @Inject
+  AptSnapshotHandler snapshotHandler;
 
-	private ViewFacet configure(final ConfigurableViewFacet facet) {
-		Router.Builder builder = new Router.Builder();
+  @Inject
+  public AptProxyRecipe(@Named(ProxyType.NAME) Type type, @Named(AptFormat.NAME) Format format) {
+    super(type, format);
+  }
 
-		builder.route(new Route.Builder()
-				.matcher(new AlwaysMatcher())
-				.handler(timingHandler)
-				.handler(securityHandler)
-				.handler(exceptionHandler)
-				.handler(negativeCacheHandler)
-				.handler(conditionalRequestHandler)
-				.handler(partialFetchHandler)
-				.handler(contentHeadersHandler)
-				.handler(unitOfWorkHandler)
-				.handler(snapshotHandler)
-				.handler(proxyHandler)
-				.create());
-		
-		builder.defaultHandlers(notFound());
-		facet.configure(builder.create());
-		return facet;
-	}
+  @Override
+  public void apply(Repository repository) throws Exception {
+    repository.attach(securityFacet.get());
+    repository.attach(configure(viewFacet.get()));
+    repository.attach(httpClientFacet.get());
+    repository.attach(negativeCacheFacet.get());
+    repository.attach(proxyFacet.get());
+    repository.attach(proxySnapshotFacet.get());
+    repository.attach(aptFacet.get());
+    repository.attach(storageFacet.get());
+    repository.attach(attributesFacet.get());
+    repository.attach(componentMaintenance.get());
+    repository.attach(searchFacet.get());
+    repository.attach(purgeUnusedFacet.get());
+  }
+
+  private ViewFacet configure(final ConfigurableViewFacet facet) {
+    Router.Builder builder = new Router.Builder();
+
+    builder.route(new Route.Builder().matcher(new AlwaysMatcher()).handler(timingHandler).handler(securityHandler)
+        .handler(exceptionHandler).handler(negativeCacheHandler).handler(conditionalRequestHandler)
+        .handler(partialFetchHandler).handler(contentHeadersHandler).handler(unitOfWorkHandler).handler(snapshotHandler)
+        .handler(proxyHandler).create());
+
+    builder.defaultHandlers(notFound());
+    facet.configure(builder.create());
+    return facet;
+  }
 }
