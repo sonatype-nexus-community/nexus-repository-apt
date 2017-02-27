@@ -38,13 +38,15 @@ public class FacetHelper
 
   public static List<ContentSpecifier> getReleaseIndexSpecifiers(AptFacet facet) {
     if (facet.isFlat()) {
-      return Arrays.asList(new ContentSpecifier("Release", SnapshotItem.Role.RELEASE_INDEX),
+      return Arrays.asList(
+          new ContentSpecifier("Release", SnapshotItem.Role.RELEASE_INDEX),
           new ContentSpecifier("Release.gpg", SnapshotItem.Role.RELEASE_SIG),
           new ContentSpecifier("InRelease", SnapshotItem.Role.RELEASE_INLINE_INDEX));
     }
     else {
       String dist = facet.getDistribution();
-      return Arrays.asList(new ContentSpecifier("dists/" + dist + "/Release", SnapshotItem.Role.RELEASE_INDEX),
+      return Arrays.asList(
+          new ContentSpecifier("dists/" + dist + "/Release", SnapshotItem.Role.RELEASE_INDEX),
           new ContentSpecifier("dists/" + dist + "/Release.gpg", SnapshotItem.Role.RELEASE_SIG),
           new ContentSpecifier("dists/" + dist + "/InRelease", SnapshotItem.Role.RELEASE_INLINE_INDEX));
     }
@@ -53,7 +55,8 @@ public class FacetHelper
 
   public static List<ContentSpecifier> getReleasePackageIndexes(AptFacet facet, String component, String arch) {
     if (facet.isFlat()) {
-      return Arrays.asList(new ContentSpecifier("Packages", SnapshotItem.Role.PACKAGE_INDEX_RAW),
+      return Arrays.asList(
+          new ContentSpecifier("Packages", SnapshotItem.Role.PACKAGE_INDEX_RAW),
           new ContentSpecifier("Packages.gz", SnapshotItem.Role.PACKAGE_INDEX_GZ),
           new ContentSpecifier("Packages.bz2", SnapshotItem.Role.PACKAGE_INDEX_BZ2));
     }

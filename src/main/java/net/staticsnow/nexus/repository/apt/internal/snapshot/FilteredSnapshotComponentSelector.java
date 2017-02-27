@@ -36,7 +36,8 @@ public class FilteredSnapshotComponentSelector
 
   @Override
   public List<String> getArchitectures(Release release) {
-    Optional<Set<String>> settingsArchitectures = settings.getField("Architectures").map(s -> s.listValue())
+    Optional<Set<String>> settingsArchitectures = settings.getField("Architectures")
+        .map(s -> s.listValue())
         .map(l -> new HashSet<>(l));
     if (settingsArchitectures.isPresent()) {
       Set<String> releaseArchitectures = new HashSet<>(release.getArchitectures());

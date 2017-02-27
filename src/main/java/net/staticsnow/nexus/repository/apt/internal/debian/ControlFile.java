@@ -48,12 +48,17 @@ public class ControlFile
     }
 
     public Builder replaceParagraph(Predicate<Paragraph> predicate, Paragraph p) {
-      paragraphs = Stream.concat(paragraphs.stream().filter(predicate), Stream.of(p)).collect(Collectors.toList());
+      paragraphs = Stream
+          .concat(paragraphs.stream().filter(predicate), Stream.of(p))
+          .collect(Collectors.toList());
       return this;
     }
 
     public Builder transformParagraphs(Predicate<Paragraph> predicate, Function<Paragraph, Paragraph> transform) {
-      paragraphs = paragraphs.stream().filter(predicate).map(transform).collect(Collectors.toList());
+      paragraphs = paragraphs.stream()
+          .filter(predicate)
+          .map(transform)
+          .collect(Collectors.toList());
       return this;
     }
 
@@ -122,13 +127,16 @@ public class ControlFile
 
     public Paragraph withFields(List<ControlField> updateFields) {
       Map<String, ControlField> index = updateFields.stream().collect(Collectors.toMap(f -> f.key, f -> f));
-      return new Paragraph(Stream.concat(fields.stream().filter(f -> !index.containsKey(f.key)), updateFields.stream())
+      return new Paragraph(Stream
+          .concat(fields.stream().filter(f -> !index.containsKey(f.key)), updateFields.stream())
           .collect(Collectors.toList()));
     }
 
     @Override
     public String toString() {
-      return fields.stream().map(f -> f.key + ": " + f.value).collect(Collectors.joining("\n"));
+      return fields.stream()
+          .map(f -> f.key + ": " + f.value)
+          .collect(Collectors.joining("\n"));
     }
   }
 
@@ -144,7 +152,9 @@ public class ControlFile
     }
 
     public String foldedValue() {
-      return Arrays.stream(value.split("\n")).map(s -> s.trim()).collect(Collectors.joining());
+      return Arrays.stream(value.split("\n"))
+          .map(s -> s.trim())
+          .collect(Collectors.joining());
     }
 
     public List<String> listValue() {

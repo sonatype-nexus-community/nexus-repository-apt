@@ -49,7 +49,6 @@ import com.orientechnologies.orient.core.storage.ORecordDuplicatedException;
 import net.staticsnow.nexus.repository.apt.AptFacet;
 
 @Named
-
 public class AptFacetImpl
     extends FacetSupport
     implements AptFacet
@@ -72,7 +71,11 @@ public class AptFacetImpl
 
   @Override
   protected void doValidate(final Configuration configuration) throws Exception {
-    facet(ConfigurationFacet.class).validateSection(configuration, CONFIG_KEY, Config.class, Default.class,
+    facet(ConfigurationFacet.class).validateSection(
+        configuration,
+        CONFIG_KEY, 
+        Config.class, 
+        Default.class,
         getRepository().getType().getValidationGroup());
   }
 

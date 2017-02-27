@@ -34,7 +34,7 @@ public interface AptFacet
 
   boolean delete(String path) throws IOException;
 
-  public boolean isFlat();
+  boolean isFlat();
 
-  public String getDistribution();
+  String getDistribution();
 }

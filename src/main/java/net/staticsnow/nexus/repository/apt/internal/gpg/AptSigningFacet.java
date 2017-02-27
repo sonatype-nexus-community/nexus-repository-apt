@@ -74,7 +74,11 @@ public class AptSigningFacet
 
   @Override
   protected void doValidate(final Configuration configuration) throws Exception {
-    facet(ConfigurationFacet.class).validateSection(configuration, CONFIG_KEY, Config.class, Default.class,
+    facet(ConfigurationFacet.class).validateSection(
+        configuration,
+        CONFIG_KEY,
+        Config.class,
+        Default.class,
         getRepository().getType().getValidationGroup());
   }
 

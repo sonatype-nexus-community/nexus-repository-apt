@@ -226,7 +226,8 @@ public class AptProxyFacet
 
   private void throwProxyExceptionForStatus(HttpResponse httpResponse) {
     final StatusLine status = httpResponse.getStatusLine();
-    if (HttpStatus.SC_UNAUTHORIZED == status.getStatusCode() || HttpStatus.SC_PAYMENT_REQUIRED == status.getStatusCode()
+    if (HttpStatus.SC_UNAUTHORIZED == status.getStatusCode() 
+        || HttpStatus.SC_PAYMENT_REQUIRED == status.getStatusCode()
         || HttpStatus.SC_PROXY_AUTHENTICATION_REQUIRED == status.getStatusCode()
         || HttpStatus.SC_INTERNAL_SERVER_ERROR <= status.getStatusCode()) {
       throw new ProxyServiceException(httpResponse);
