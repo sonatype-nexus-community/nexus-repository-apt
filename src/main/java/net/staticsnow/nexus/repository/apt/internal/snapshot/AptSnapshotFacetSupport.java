@@ -28,13 +28,14 @@ import java.util.stream.Collectors;
 
 import org.bouncycastle.bcpg.ArmoredInputStream;
 import org.sonatype.nexus.blobstore.api.Blob;
-import org.sonatype.nexus.common.io.TempStreamSupplier;
 import org.sonatype.nexus.repository.FacetSupport;
 import org.sonatype.nexus.repository.storage.Asset;
 import org.sonatype.nexus.repository.storage.AssetBlob;
 import org.sonatype.nexus.repository.storage.Bucket;
 import org.sonatype.nexus.repository.storage.Component;
+import org.sonatype.nexus.repository.storage.StorageFacet;
 import org.sonatype.nexus.repository.storage.StorageTx;
+import org.sonatype.nexus.repository.storage.TempBlob;
 import org.sonatype.nexus.repository.view.Content;
 import org.sonatype.nexus.transaction.Transactional;
 import org.sonatype.nexus.transaction.UnitOfWork;
@@ -61,13 +62,14 @@ public abstract class AptSnapshotFacetSupport
   @Override
   public void createSnapshot(String id, SnapshotComponentSelector selector) throws IOException {
     StorageTx tx = UnitOfWork.currentTx();
+    StorageFacet storageFacet = facet(StorageFacet.class);
     Bucket bucket = tx.findBucket(getRepository());
     Component component = tx.createComponent(bucket, getRepository().getFormat()).name(id);
     tx.saveComponent(component);
     for (SnapshotItem item : collectSnapshotItems(selector)) {
       String assetName = createAssetPath(id, item.specifier.path);
       Asset asset = tx.createAsset(bucket, component).name(assetName);
-      try (final TempStreamSupplier streamSupplier = new TempStreamSupplier(item.content.openInputStream())) {
+      try (final TempBlob streamSupplier = storageFacet.createTempBlob(item.content.openInputStream(), FacetHelper.hashAlgorithms)) {
         AssetBlob blob = tx.createBlob(item.specifier.path, streamSupplier, FacetHelper.hashAlgorithms, null,
             FacetHelper.determineContentType(item), true);
         tx.attachBlob(asset, blob);

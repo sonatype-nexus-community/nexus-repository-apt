@@ -49,7 +49,6 @@ import org.apache.commons.io.input.CloseShieldInputStream;
 import org.apache.http.client.utils.DateUtils;
 import org.bouncycastle.openpgp.PGPException;
 import org.sonatype.nexus.common.hash.HashAlgorithm;
-import org.sonatype.nexus.common.io.TempStreamSupplier;
 import org.sonatype.nexus.orient.entity.AttachedEntityHelper;
 import org.sonatype.nexus.repository.Facet;
 import org.sonatype.nexus.repository.FacetSupport;
@@ -58,17 +57,19 @@ import org.sonatype.nexus.repository.config.Configuration;
 import org.sonatype.nexus.repository.config.ConfigurationFacet;
 import org.sonatype.nexus.repository.storage.Asset;
 import org.sonatype.nexus.repository.storage.Bucket;
+import org.sonatype.nexus.repository.storage.StorageFacet;
 import org.sonatype.nexus.repository.storage.StorageTx;
+import org.sonatype.nexus.repository.storage.TempBlob;
+import org.sonatype.nexus.repository.transaction.TransactionalStoreBlob;
+import org.sonatype.nexus.repository.transaction.TransactionalStoreMetadata;
 import org.sonatype.nexus.repository.view.Content;
 import org.sonatype.nexus.repository.view.Payload;
 import org.sonatype.nexus.repository.view.payloads.BytesPayload;
 import org.sonatype.nexus.repository.view.payloads.StreamPayload;
-import org.sonatype.nexus.transaction.Transactional;
 import org.sonatype.nexus.transaction.UnitOfWork;
 
 import com.google.common.base.Charsets;
 import com.google.common.hash.HashCode;
-import com.orientechnologies.common.concur.ONeedRetryException;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import net.staticsnow.nexus.repository.apt.AptFacet;
@@ -90,12 +91,19 @@ public class AptHostedFacet
   private static final String P_PACKAGE_NAME = "package_name";
   private static final String P_PACKAGE_VERSION = "package_version";
 
-  private static final String SELECT_HOSTED_ASSETS = "SELECT " + "name, "
-      + "attributes.apt.index_section AS index_section, " + "attributes.apt.architecture AS architecture "
-      + "FROM asset " + "WHERE bucket=:bucket " + "AND attributes.apt.asset_kind=:asset_kind";
+  private static final String SELECT_HOSTED_ASSETS = 
+      "SELECT " +
+      "name, " +
+      "attributes.apt.index_section AS index_section, " +
+      "attributes.apt.architecture AS architecture " +
+      "FROM asset " +
+      "WHERE bucket=:bucket " +
+      "AND attributes.apt.asset_kind=:asset_kind";
 
-  private static final String ASSETS_BY_PACKAGE_AND_ARCH = "attributes.apt.asset_kind=:asset_kind "
-      + "AND attributes.apt.package_name=:package_name " + "AND attributes.apt.architecture=:architecture";
+  private static final String ASSETS_BY_PACKAGE_AND_ARCH = 
+      "attributes.apt.asset_kind=:asset_kind " +
+      "AND attributes.apt.package_name=:package_name " +
+      "AND attributes.apt.architecture=:architecture";
 
   static final String CONFIG_KEY = "aptHosted";
 
@@ -116,15 +124,16 @@ public class AptHostedFacet
     config = null;
   }
 
-  @Transactional(retryOn = { ONeedRetryException.class })
+  @TransactionalStoreBlob
   public void ingestAsset(Payload body) throws IOException, PGPException {
     AptFacet aptFacet = getRepository().facet(AptFacet.class);
+    StorageFacet storageFacet = facet(StorageFacet.class);
     StorageTx tx = UnitOfWork.currentTx();
     Bucket bucket = tx.findBucket(getRepository());
 
     ControlFile control = null;
-    try (TempStreamSupplier supplier = new TempStreamSupplier(body.openInputStream());
-        ArArchiveInputStream is = new ArArchiveInputStream(supplier.get())) {
+    try (TempBlob tempBlob = storageFacet.createTempBlob(body, FacetHelper.hashAlgorithms);
+         ArArchiveInputStream is = new ArArchiveInputStream(tempBlob.get())) {
       ArchiveEntry debEntry;
       while ((debEntry = is.getNextEntry()) != null) {
         InputStream controlStream;
@@ -162,11 +171,9 @@ public class AptHostedFacet
       String assetName = name + "_" + version + "_" + architecture + ".deb";
       String assetPath = "pool/" + name.substring(0, 1) + "/" + name + "/" + assetName;
 
-      Content content = aptFacet.put(assetPath,
-          new StreamPayload(() -> supplier.get(), body.getSize(), body.getContentType()));
+      Content content = aptFacet.put(assetPath, new StreamPayload(() -> tempBlob.get(), body.getSize(), body.getContentType()));
       Asset asset = Content.findAsset(tx, bucket, content);
-      String indexSection = buildIndexSection(control, asset.size(), asset.getChecksums(FacetHelper.hashAlgorithms),
-          assetPath);
+      String indexSection = buildIndexSection(control, asset.size(), asset.getChecksums(FacetHelper.hashAlgorithms), assetPath);
       asset.formatAttributes().set(P_ARCHITECTURE, architecture);
       asset.formatAttributes().set(P_PACKAGE_NAME, name);
       asset.formatAttributes().set(P_PACKAGE_VERSION, version);
@@ -186,12 +193,12 @@ public class AptHostedFacet
     }
   }
 
-  @Transactional(retryOn = { ONeedRetryException.class })
   public void rebuildIndexes(AssetChange... changes) throws IOException, PGPException {
     StorageTx tx = UnitOfWork.currentTx();
     rebuildIndexesInTransaction(tx, changes);
   }
 
+  @TransactionalStoreMetadata
   private void rebuildIndexesInTransaction(StorageTx tx, AssetChange... changes) throws IOException, PGPException {
     AptFacet aptFacet = getRepository().facet(AptFacet.class);
     AptSigningFacet signingFacet = getRepository().facet(AptSigningFacet.class);
@@ -202,28 +209,29 @@ public class AptHostedFacet
     String releaseFile;
     try (CompressingTempFileStore store = buildPackageIndexes(tx, bucket, changes)) {
       for (Map.Entry<String, CompressingTempFileStore.FileMetadata> entry : store.getFiles().entrySet()) {
-        Content plainContent = aptFacet.put(packageIndexName(entry.getKey(), ""),
+        Content plainContent = aptFacet.put(
+            packageIndexName(entry.getKey(), ""),
             new StreamPayload(entry.getValue().plainSupplier(), entry.getValue().plainSize(), AptMimeTypes.TEXT));
         addSignatureItem(md5Builder, MD5, plainContent, packageRelativeIndexName(entry.getKey(), ""));
         addSignatureItem(sha256Builder, SHA256, plainContent, packageRelativeIndexName(entry.getKey(), ""));
 
-        Content gzContent = aptFacet.put(packageIndexName(entry.getKey(), ".gz"),
+        Content gzContent = aptFacet.put(
+            packageIndexName(entry.getKey(), ".gz"),
             new StreamPayload(entry.getValue().gzSupplier(), entry.getValue().bzSize(), AptMimeTypes.GZIP));
         addSignatureItem(md5Builder, MD5, gzContent, packageRelativeIndexName(entry.getKey(), ".gz"));
         addSignatureItem(sha256Builder, SHA256, gzContent, packageRelativeIndexName(entry.getKey(), ".gz"));
 
-        Content bzContent = aptFacet.put(packageIndexName(entry.getKey(), ".bz2"),
+        Content bzContent = aptFacet.put(
+            packageIndexName(entry.getKey(), ".bz2"),
             new StreamPayload(entry.getValue().bzSupplier(), entry.getValue().bzSize(), AptMimeTypes.BZIP));
         addSignatureItem(md5Builder, MD5, bzContent, packageRelativeIndexName(entry.getKey(), ".bz2"));
         addSignatureItem(sha256Builder, SHA256, bzContent, packageRelativeIndexName(entry.getKey(), ".bz2"));
       }
 
-      releaseFile = buildReleaseFile(aptFacet.getDistribution(), store.getFiles().keySet(), md5Builder.toString(),
-          sha256Builder.toString());
+      releaseFile = buildReleaseFile(aptFacet.getDistribution(), store.getFiles().keySet(), md5Builder.toString(), sha256Builder.toString());
     }
 
-    aptFacet.put(releaseIndexName("Release"),
-        new BytesPayload(releaseFile.getBytes(Charsets.UTF_8), AptMimeTypes.TEXT));
+    aptFacet.put(releaseIndexName("Release"), new BytesPayload(releaseFile.getBytes(Charsets.UTF_8), AptMimeTypes.TEXT));
     byte[] inRelease = signingFacet.signInline(releaseFile);
     aptFacet.put(releaseIndexName("InRelease"), new BytesPayload(inRelease, AptMimeTypes.TEXT));
     byte[] releaseGpg = signingFacet.signExternal(releaseFile);
@@ -231,7 +239,8 @@ public class AptHostedFacet
   }
 
   private String buildReleaseFile(String distribution, Collection<String> architectures, String md5, String sha256) {
-    Paragraph p = new Paragraph(Arrays.asList(new ControlFile.ControlField("Suite", distribution),
+    Paragraph p = new Paragraph(Arrays.asList(
+        new ControlFile.ControlField("Suite", distribution),
         new ControlFile.ControlField("Codename", distribution), new ControlFile.ControlField("Components", "main"),
         new ControlFile.ControlField("Date", DateUtils.formatDate(new Date())),
         new ControlFile.ControlField("Architectures", architectures.stream().collect(Collectors.joining(" "))),
@@ -250,7 +259,8 @@ public class AptHostedFacet
       sqlParams.put(P_BUCKET, AttachedEntityHelper.id(bucket));
       sqlParams.put(P_ASSET_KIND, "DEB");
 
-      Set<String> excludeNames = Arrays.stream(changes).filter(change -> change.action == AssetAction.REMOVED)
+      Set<String> excludeNames = Arrays.stream(changes)
+          .filter(change -> change.action == AssetAction.REMOVED)
           .map(change -> change.asset.name()).collect(Collectors.toSet());
 
       for (ODocument d : tx.browse(SELECT_HOSTED_ASSETS, sqlParams)) {
@@ -292,7 +302,8 @@ public class AptHostedFacet
 
   private String buildIndexSection(ControlFile cf, long size, Map<HashAlgorithm, HashCode> hashes, String assetPath) {
     Paragraph modified = cf.getParagraphs().get(0)
-        .withFields(Arrays.asList(new ControlFile.ControlField("Filename", assetPath),
+        .withFields(Arrays.asList(
+            new ControlFile.ControlField("Filename", assetPath),
             new ControlFile.ControlField("Size", Long.toString(size)),
             new ControlFile.ControlField("MD5Sum", hashes.get(MD5).toString()),
             new ControlFile.ControlField("SHA1", hashes.get(SHA1).toString()),

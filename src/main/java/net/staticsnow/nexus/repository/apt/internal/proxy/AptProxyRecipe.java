@@ -152,9 +152,16 @@ public class AptProxyRecipe
   private ViewFacet configure(final ConfigurableViewFacet facet) {
     Router.Builder builder = new Router.Builder();
 
-    builder.route(new Route.Builder().matcher(new AlwaysMatcher()).handler(timingHandler).handler(securityHandler)
-        .handler(exceptionHandler).handler(negativeCacheHandler).handler(conditionalRequestHandler)
-        .handler(partialFetchHandler).handler(contentHeadersHandler).handler(unitOfWorkHandler).handler(snapshotHandler)
+    builder.route(new Route.Builder().matcher(new AlwaysMatcher())
+        .handler(timingHandler)
+        .handler(securityHandler)
+        .handler(exceptionHandler)
+        .handler(negativeCacheHandler)
+        .handler(conditionalRequestHandler)
+        .handler(partialFetchHandler)
+        .handler(contentHeadersHandler)
+        .handler(unitOfWorkHandler)
+        .handler(snapshotHandler)
         .handler(proxyHandler).create());
 
     builder.defaultHandlers(notFound());

@@ -18,15 +18,19 @@ package net.staticsnow.nexus.repository.apt.internal;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.sonatype.nexus.repository.security.ContentPermissionChecker;
 import org.sonatype.nexus.repository.security.SecurityFacetSupport;
-import org.sonatype.nexus.security.SecurityHelper;
+import org.sonatype.nexus.repository.security.VariableResolverAdapter;
 
 @Named
 public class AptSecurityFacet
     extends SecurityFacetSupport
 {
   @Inject
-  public AptSecurityFacet(SecurityHelper securityHelper, AptSecurityConfigurationResource securityResource) {
-    super(securityHelper, securityResource);
+  public AptSecurityFacet(
+                          AptFormatSecurityContributor securityResource,
+                          @Named("simple") final VariableResolverAdapter variableResolverAdapter,
+                          final ContentPermissionChecker contentPermissionChecker) {
+    super(securityResource, variableResolverAdapter, contentPermissionChecker);
   }
 }

@@ -140,9 +140,16 @@ public class AptHostedRecipe
   private ViewFacet configure(final ConfigurableViewFacet facet) {
     Router.Builder builder = new Router.Builder();
 
-    builder.route(new Route.Builder().matcher(new AlwaysMatcher()).handler(timingHandler).handler(securityHandler)
-        .handler(exceptionHandler).handler(conditionalRequestHandler).handler(partialFetchHandler)
-        .handler(contentHeadersHandler).handler(unitOfWorkHandler).handler(snapshotHandler).handler(signingHandler)
+    builder.route(new Route.Builder().matcher(new AlwaysMatcher())
+        .handler(timingHandler)
+        .handler(securityHandler)
+        .handler(exceptionHandler)
+        .handler(conditionalRequestHandler)
+        .handler(partialFetchHandler)
+        .handler(contentHeadersHandler)
+        .handler(unitOfWorkHandler)
+        .handler(snapshotHandler)
+        .handler(signingHandler)
         .handler(hostedHandler).create());
 
     builder.defaultHandlers(notFound());

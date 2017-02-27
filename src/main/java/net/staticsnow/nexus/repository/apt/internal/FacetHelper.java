@@ -63,12 +63,9 @@ public class FacetHelper
     else {
       String dist = facet.getDistribution();
       return Arrays.asList(
-          new ContentSpecifier("dists/" + dist + "/" + component + "/binary-" + arch + "/Packages",
-              SnapshotItem.Role.PACKAGE_INDEX_RAW),
-          new ContentSpecifier("dists/" + dist + "/" + component + "/binary-" + arch + "/Packages.gz",
-              SnapshotItem.Role.PACKAGE_INDEX_GZ),
-          new ContentSpecifier("dists/" + dist + "/" + component + "/binary-" + arch + "/Packages.bz2",
-              SnapshotItem.Role.PACKAGE_INDEX_BZ2));
+          new ContentSpecifier("dists/" + dist + "/" + component + "/binary-" + arch + "/Packages", SnapshotItem.Role.PACKAGE_INDEX_RAW),
+          new ContentSpecifier("dists/" + dist + "/" + component + "/binary-" + arch + "/Packages.gz", SnapshotItem.Role.PACKAGE_INDEX_GZ),
+          new ContentSpecifier("dists/" + dist + "/" + component + "/binary-" + arch + "/Packages.bz2", SnapshotItem.Role.PACKAGE_INDEX_BZ2));
     }
 
   }
@@ -96,5 +93,9 @@ public class FacetHelper
     final Content content = new Content(new BlobPayload(blob, asset.requireContentType()));
     Content.extractFromAsset(asset, hashAlgorithms, content.getAttributes());
     return content;
+  }
+
+  private FacetHelper() {
+    //empty
   }
 }

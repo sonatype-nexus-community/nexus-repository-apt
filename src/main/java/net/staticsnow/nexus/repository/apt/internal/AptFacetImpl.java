@@ -24,9 +24,7 @@ import javax.inject.Named;
 import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 
-import org.sonatype.nexus.blobstore.api.Blob;
 import org.sonatype.nexus.common.collect.AttributesMap;
-import org.sonatype.nexus.common.io.TempStreamSupplier;
 import org.sonatype.nexus.repository.FacetSupport;
 import org.sonatype.nexus.repository.config.Configuration;
 import org.sonatype.nexus.repository.config.ConfigurationFacet;
@@ -35,16 +33,17 @@ import org.sonatype.nexus.repository.storage.AssetBlob;
 import org.sonatype.nexus.repository.storage.Bucket;
 import org.sonatype.nexus.repository.storage.StorageFacet;
 import org.sonatype.nexus.repository.storage.StorageTx;
+import org.sonatype.nexus.repository.storage.TempBlob;
+import org.sonatype.nexus.repository.transaction.TransactionalDeleteBlob;
+import org.sonatype.nexus.repository.transaction.TransactionalStoreBlob;
+import org.sonatype.nexus.repository.transaction.TransactionalTouchBlob;
 import org.sonatype.nexus.repository.types.HostedType;
 import org.sonatype.nexus.repository.types.ProxyType;
 import org.sonatype.nexus.repository.view.Content;
 import org.sonatype.nexus.repository.view.Payload;
-import org.sonatype.nexus.transaction.Transactional;
 import org.sonatype.nexus.transaction.UnitOfWork;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.orientechnologies.common.concur.ONeedRetryException;
-import com.orientechnologies.orient.core.storage.ORecordDuplicatedException;
 
 import net.staticsnow.nexus.repository.apt.AptFacet;
 
@@ -107,7 +106,7 @@ public class AptFacetImpl
 
   @Override
   @Nullable
-  @Transactional(retryOn = IllegalStateException.class, swallow = ONeedRetryException.class)
+  @TransactionalTouchBlob
   public Content get(String path) throws IOException {
     final StorageTx tx = UnitOfWork.currentTx();
     final Asset asset = tx.findAssetWithProperty(P_NAME, path, tx.findBucket(getRepository()));
@@ -118,14 +117,14 @@ public class AptFacetImpl
       tx.saveAsset(asset);
     }
 
-    final Blob blob = tx.requireBlob(asset.requireBlobRef());
-    return FacetHelper.toContent(asset, blob);
+    return FacetHelper.toContent(asset, tx.requireBlob(asset.requireBlobRef()));
   }
 
-  @Transactional(retryOn = { ONeedRetryException.class, ORecordDuplicatedException.class })
   @Override
+  @TransactionalStoreBlob
   public Content put(String path, Payload content) throws IOException {
-    try (final TempStreamSupplier streamSupplier = new TempStreamSupplier(content.openInputStream())) {
+    StorageFacet storageFacet = facet(StorageFacet.class);
+    try (final TempBlob tembBlob = storageFacet.createTempBlob(content, FacetHelper.hashAlgorithms)) {
       StorageTx tx = UnitOfWork.currentTx();
       Bucket bucket = tx.findBucket(getRepository());
       Asset asset = tx.findAssetWithProperty(P_NAME, path, bucket);
@@ -138,15 +137,21 @@ public class AptFacetImpl
         contentAttributes = ((Content) content).getAttributes();
       }
       Content.applyToAsset(asset, Content.maintainLastModified(asset, contentAttributes));
-      AssetBlob blob = tx.setBlob(asset, path, streamSupplier, FacetHelper.hashAlgorithms, null,
-          content.getContentType(), false);
+      AssetBlob blob = tx.setBlob(
+          asset,
+          path,
+          tembBlob,
+          FacetHelper.hashAlgorithms,
+          null,
+          content.getContentType(),
+          false);
       tx.saveAsset(asset);
       return FacetHelper.toContent(asset, blob.getBlob());
     }
   }
 
-  @Transactional
   @Override
+  @TransactionalDeleteBlob
   public boolean delete(String path) throws IOException {
     StorageTx tx = UnitOfWork.currentTx();
     Bucket bucket = tx.findBucket(getRepository());
