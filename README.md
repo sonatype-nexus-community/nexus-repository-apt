@@ -60,18 +60,21 @@ is running. You will still need to start the bundle using the karaf commands men
 If you are trying to use the APT plugin permanently, it likely makes more sense to do the following:
 
 * Copy the bundle into `<nexus_dir>/system/net/staticsnow/nexus-repository-apt/1.0.2/nexus-repository-apt-1.0.2.jar`
-* Add the following lines to `<nexus_dir>/system/com/sonatype/nexus/assemblies/nexus-oss-feature/3.x.y/nexus-oss-feature-3.x.y-features.xml`
-  ```
-    <feature prerequisite="false" dependency="false">nexus-repository-apt</feature>
-  ```
-  And:
-  ```
-     <feature name="nexus-repository-apt" description="net.staticsnow:nexus-repository-apt" version="1.0.2">
-        <details>net.staticsnow:nexus-repository-apt</details>
-        <bundle>mvn:net.staticsnow/nexus-repository-apt/1.0.2</bundle>
+* Make the following edits marked with + to `<nexus_dir>/system/com/sonatype/nexus/assemblies/nexus-oss-feature/3.x.y/nexus-oss-feature-3.x.y-features.xml`
+   ```
+         <feature prerequisite="false" dependency="false">nexus-repository-rubygems</feature>
+   +     <feature prerequisite="false" dependency="false">nexus-repository-apt</feature>
+         <feature prerequisite="false" dependency="false">nexus-repository-gitlfs</feature>
      </feature>
-  ```
-
+   ```
+   And
+   ```
+   + <feature name="nexus-repository-apt" description="net.staticsnow:nexus-repository-apt" version="1.0.2">
+   +     <details>net.staticsnow:nexus-repository-apt</details>
+   +     <bundle>mvn:net.staticsnow/nexus-repository-apt/1.0.2</bundle>
+   + </feature>
+    </features>
+   ```
 This will cause the plugin to be loaded and started with each startup of Nexus Repository.
 
 ### Manually upload a package to a new created repo:
