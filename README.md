@@ -47,17 +47,13 @@ good installation path if you are just testing or doing development on the plugi
 
 #### Permanent Install
 
-For more permanent installs of the nexus-repository-apt plugin, you will need to have the Repository Manager stopped
-and then:
+For more permanent installs of the nexus-repository-apt plugin, follow these instructions:
 
 * Copy the bundle (nexus-repository-apt-1.0.2.jar) into <nexus_dir>/deploy
-  ```
-  # sudo su - nexus
-  $ cd <nexus_dir>/bin
-  $ ./nexus run
-  ```
 
-This will cause the plugin to be loaded with each restart of Nexus Repository.
+This will cause the plugin to be loaded with each restart of Nexus Repository. As well, this folder is monitored
+by Nexus Repository and the plugin should load within 60 seconds of being copied there if Nexus Repository
+is running.
 
 ### Manually upload a package to a new created repo:
 `curl -u user:pass -X POST -H "Content-Type: multipart/form-data" --data-binary "@package.deb"  http://nexus_url:8081/repository/repo_name/`
