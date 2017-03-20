@@ -51,11 +51,11 @@ For more permanent installs of the nexus-repository-apt plugin, you will need to
 and then:
 
 * Copy the bundle (nexus-repository-apt-1.0.2.jar) into <nexus_dir>/deploy
-```
-* sudo su - nexus
-* cd <nexus_dir>/bin
-* ./nexus run
-```
+  ```
+  * sudo su - nexus
+  * cd <nexus_dir>/bin
+  * ./nexus run
+  ```
 
 This will cause the plugin to be loaded with each restart of Nexus Repository.
 
