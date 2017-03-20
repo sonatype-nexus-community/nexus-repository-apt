@@ -45,7 +45,7 @@ good installation path if you are just testing or doing development on the plugi
   > bundle:start <net.staticsnow:nexus-repository-apt ID>
   ```
 
-#### Permanent Install
+#### (more) Permanent Install
 
 For more permanent installs of the nexus-repository-apt plugin, follow these instructions:
 
@@ -53,7 +53,26 @@ For more permanent installs of the nexus-repository-apt plugin, follow these ins
 
 This will cause the plugin to be loaded with each restart of Nexus Repository. As well, this folder is monitored
 by Nexus Repository and the plugin should load within 60 seconds of being copied there if Nexus Repository
-is running.
+is running. You will still need to start the bundle using the karaf commands mentioned in the temporary install.
+
+#### (most) Permanent Install
+
+If you are trying to use the APT plugin permanently, it likely makes more sense to do the following:
+
+* Copy the bundle into `<nexus_dir>/system/net/staticsnow/nexus-repository-apt/1.0.2/nexus-repository-apt-1.0.2.jar`
+* Add the following lines to `<nexus_dir>/system/com/sonatype/nexus/assemblies/nexus-oss-feature/3.x.y/nexus-oss-feature-3.x.y-features.xml`
+  ```
+    <feature prerequisite="false" dependency="false">nexus-repository-apt</feature>
+  ```
+  And:
+  ```
+     <feature name="nexus-repository-apt" description="net.staticsnow:nexus-repository-apt" version="1.0.2">
+        <details>net.staticsnow:nexus-repository-apt</details>
+        <bundle>mvn:net.staticsnow/nexus-repository-apt/1.0.2</bundle>
+     </feature>
+  ```
+
+This will cause the plugin to be loaded and started with each startup of Nexus Repository.
 
 ### Manually upload a package to a new created repo:
 `curl -u user:pass -X POST -H "Content-Type: multipart/form-data" --data-binary "@package.deb"  http://nexus_url:8081/repository/repo_name/`
