@@ -95,7 +95,7 @@ public abstract class AptSnapshotFacetSupport
     if (asset == null) {
       return null;
     }
-    if (asset.markAsAccessed()) {
+    if (asset.markAsDownloaded()) {
       tx.saveAsset(asset);
     }
 
