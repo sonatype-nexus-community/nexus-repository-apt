@@ -113,7 +113,7 @@ public class AptFacetImpl
     if (asset == null) {
       return null;
     }
-    if (asset.markAsAccessed()) {
+    if (asset.markAsDownloaded()) {
       tx.saveAsset(asset);
     }
 
