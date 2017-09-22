@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<features xmlns="http://karaf.apache.org/xmlns/features/v1.4.0" name="nexus-oss-feature">
+    <feature name="nexus-oss-feature" description="com.sonatype.nexus.assemblies:nexus-oss-feature" version="3.5.2.01">
+        <details>com.sonatype.nexus.assemblies:nexus-oss-feature</details>
+        <feature prerequisite="true" dependency="false">nexus-core-feature</feature>
+        <feature version="3.5.2.01" prerequisite="false" dependency="false">nexus-ldap-plugin</feature>
+        <feature version="3.5.2.01" prerequisite="false" dependency="false">nexus-proui-plugin</feature>
+        <feature version="3.5.2.01" prerequisite="false" dependency="false">nexus-proximanova-plugin</feature>
+        <feature version="3.5.2.01" prerequisite="false" dependency="false">nexus-analytics-plugin</feature>
+        <feature version="3.5.2.01" prerequisite="false" dependency="false">nexus-licensing-plugin</feature>
+        <feature version="3.5.2.01" prerequisite="false" dependency="false">nexus-migration-plugin</feature>
+        <feature version="3.5.2.01" prerequisite="false" dependency="false">nexus-outreach-plugin</feature>
+        <feature version="3.5.2.01" prerequisite="false" dependency="false">nexus-repository-bower</feature>
+        <feature version="3.5.2.01" prerequisite="false" dependency="false">nexus-repository-npm</feature>
+        <feature version="3.5.2.01" prerequisite="false" dependency="false">nexus-repository-nuget</feature>
+        <feature version="3.5.2.01" prerequisite="false" dependency="false">nexus-repository-docker</feature>
+        <feature version="3.5.2.01" prerequisite="false" dependency="false">nexus-repository-pypi</feature>
+        <feature version="3.5.2.01" prerequisite="false" dependency="false">nexus-repository-rubygems</feature>
+        <feature version="1.0.2" prerequisite="false" dependency="false">nexus-repository-apt</feature>
+        <feature version="3.5.2.01" prerequisite="false" dependency="false">nexus-repository-yum</feature>
+        <feature version="3.5.2.01" prerequisite="false" dependency="false">nexus-repository-gitlfs</feature>
+        <feature version="3.5.2.01" prerequisite="false" dependency="false">nexus-rutauth-plugin</feature>
+        <feature prerequisite="false" dependency="false">nexus-script-plugin</feature>
+        <feature version="3.5.2.01" prerequisite="false" dependency="false">nexus-ahc-plugin</feature>
+        <feature version="3.5.2.01" prerequisite="false" dependency="false">nexus-healthcheck-oss-plugin</feature>
+        <feature prerequisite="true" dependency="false">wrap</feature>
+        <bundle>mvn:com.sonatype.nexus/nexus-licensing-extension/3.5.2-01</bundle>
+        <bundle>wrap:mvn:com.sonatype.licensing/license-bundle/1.4.3</bundle>
+        <bundle>mvn:commons-codec/commons-codec/1.10</bundle>
+        <bundle>mvn:com.google.guava/guava/21.0</bundle>
+        <bundle>mvn:com.thoughtworks.xstream/xstream/1.4.10</bundle>
+        <bundle>mvn:javax.enterprise/cdi-api/1.2</bundle>
+        <bundle>mvn:javax.el/javax.el-api/2.2.5</bundle>
+        <bundle>mvn:javax.interceptor/javax.interceptor-api/1.2</bundle>
+        <bundle>mvn:org.eclipse.sisu/org.eclipse.sisu.inject/0.3.2</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xpp3/1.1.4c_7</bundle>
+    </feature>
+    <feature name="nexus-ldap-plugin" description="com.sonatype.nexus.plugins:nexus-ldap-plugin" version="3.5.2.01">
+        <details>com.sonatype.nexus.plugins:nexus-ldap-plugin</details>
+        <bundle>mvn:com.sonatype.nexus.plugins/nexus-ldap-plugin/3.5.2-01</bundle>
+    </feature>
+    <feature name="nexus-licensing-plugin" description="com.sonatype.nexus.plugins:nexus-licensing-plugin" version="3.5.2.01">
+        <details>com.sonatype.nexus.plugins:nexus-licensing-plugin</details>
+        <bundle>mvn:com.sonatype.nexus.plugins/nexus-licensing-plugin/3.5.2-01</bundle>
+    </feature>
+    <feature name="nexus-proui-plugin" description="com.sonatype.nexus.plugins:nexus-proui-plugin" version="3.5.2.01">
+        <details>com.sonatype.nexus.plugins:nexus-proui-plugin</details>
+        <bundle>mvn:com.sonatype.nexus.plugins/nexus-proui-plugin/3.5.2-01</bundle>
+    </feature>
+    <feature name="nexus-proximanova-plugin" description="com.sonatype.nexus.plugins:nexus-proximanova-plugin" version="3.5.2.01">
+        <details>com.sonatype.nexus.plugins:nexus-proximanova-plugin</details>
+        <bundle>mvn:com.sonatype.nexus.plugins/nexus-proximanova-plugin/3.5.2-01</bundle>
+    </feature>
+    <feature name="nexus-analytics-plugin" description="com.sonatype.nexus.plugins:nexus-analytics-plugin" version="3.5.2.01">
+        <details>com.sonatype.nexus.plugins:nexus-analytics-plugin</details>
+        <feature prerequisite="true" dependency="false">wrap</feature>
+        <bundle>mvn:com.sonatype.nexus.plugins/nexus-analytics-plugin/3.5.2-01</bundle>
+        <bundle>mvn:org.sonatype.nexus/nexus-rest-client/3.5.2-01</bundle>
+        <bundle>mvn:org.jboss.spec.javax.ws.rs/jboss-jaxrs-api_2.0_spec/1.0.1.Beta1</bundle>
+        <bundle>mvn:org.jboss.spec.javax.annotation/jboss-annotations-api_1.2_spec/1.0.0.Final</bundle>
+        <bundle>wrap:mvn:net.jcip/jcip-annotations/1.0</bundle>
+        <bundle>wrap:mvn:org.jboss.resteasy/resteasy-jaxrs-services/3.1.3.Final</bundle>
+        <bundle>mvn:org.jboss.logging/jboss-logging/3.3.0.Final</bundle>
+        <bundle>wrap:mvn:javax.xml.bind/jaxb-api/2.2.7</bundle>
+        <bundle>mvn:com.sun.istack/istack-commons-runtime/2.16</bundle>
+        <bundle>mvn:com.sun.xml.fastinfoset/FastInfoset/1.2.13</bundle>
+        <bundle>mvn:com.sun.mail/javax.mail/1.5.6</bundle>
+        <bundle>mvn:org.apache.james/apache-mime4j/0.6</bundle>
+    </feature>
+    <feature name="nexus-ahc-plugin" description="com.sonatype.nexus.plugins:nexus-ahc-plugin" version="3.5.2.01">
+        <details>com.sonatype.nexus.plugins:nexus-ahc-plugin</details>
+        <feature prerequisite="true" dependency="false">wrap</feature>
+        <bundle>mvn:com.sonatype.nexus.plugins/nexus-ahc-plugin/3.5.2-01</bundle>
+        <bundle>mvn:com.sonatype.nexus.plugins/nexus-healthcheck-base/3.5.2-01</bundle>
+        <bundle>wrap:mvn:com.sonatype.insight.scan/insight-scanner-model/2.6.0-01</bundle>
+        <bundle>wrap:mvn:com.sonatype.insight.scan/insight-scanner-model-io/2.6.0-01</bundle>
+        <bundle>mvn:com.thoughtworks.xstream/xstream/1.4.10</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xpp3/1.1.4c_7</bundle>
+    </feature>
+    <feature name="nexus-healthcheck-oss-plugin" description="com.sonatype.nexus.plugins:nexus-healthcheck-oss-plugin" version="3.5.2.01">
+        <details>com.sonatype.nexus.plugins:nexus-healthcheck-oss-plugin</details>
+        <feature prerequisite="true" dependency="false">wrap</feature>
+        <bundle>mvn:com.sonatype.nexus.plugins/nexus-healthcheck-oss-plugin/3.5.2-01</bundle>
+        <bundle>mvn:com.sonatype.nexus.plugins/nexus-healthcheck-base/3.5.2-01</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xpp3/1.1.4c_7</bundle>
+        <bundle>mvn:com.sonatype.clm/com.sonatype.clm.dto.model/1.7.0-01</bundle>
+        <bundle>wrap:mvn:com.sonatype.insight.scan/insight-scanner-core/2.6.0-01</bundle>
+        <bundle>wrap:mvn:com.sonatype.insight.scan/insight-scanner-model/2.6.0-01</bundle>
+        <bundle>wrap:mvn:com.sonatype.insight.scan/insight-scanner-model-io/2.6.0-01</bundle>
+        <bundle>mvn:com.thoughtworks.xstream/xstream/1.4.10</bundle>
+    </feature>
+    <feature name="nexus-migration-plugin" description="com.sonatype.nexus.plugins:nexus-migration-plugin" version="3.5.2.01">
+        <details>com.sonatype.nexus.plugins:nexus-migration-plugin</details>
+        <feature prerequisite="true" dependency="false">wrap</feature>
+        <bundle>mvn:com.sonatype.nexus.plugins/nexus-migration-plugin/3.5.2-01</bundle>
+        <bundle>mvn:org.sonatype.nexus/nexus-rest-client/3.5.2-01</bundle>
+        <bundle>mvn:org.jboss.spec.javax.ws.rs/jboss-jaxrs-api_2.0_spec/1.0.1.Beta1</bundle>
+        <bundle>mvn:org.jboss.spec.javax.annotation/jboss-annotations-api_1.2_spec/1.0.0.Final</bundle>
+        <bundle>wrap:mvn:net.jcip/jcip-annotations/1.0</bundle>
+        <bundle>wrap:mvn:org.jboss.resteasy/resteasy-jaxrs-services/3.1.3.Final</bundle>
+        <bundle>mvn:org.jboss.logging/jboss-logging/3.3.0.Final</bundle>
+        <bundle>wrap:mvn:javax.xml.bind/jaxb-api/2.2.7</bundle>
+        <bundle>mvn:com.sun.istack/istack-commons-runtime/2.16</bundle>
+        <bundle>mvn:com.sun.xml.fastinfoset/FastInfoset/1.2.13</bundle>
+        <bundle>mvn:com.sun.mail/javax.mail/1.5.6</bundle>
+        <bundle>mvn:org.apache.james/apache-mime4j/0.6</bundle>
+        <bundle>mvn:com.fasterxml.jackson.dataformat/jackson-dataformat-smile/2.8.9</bundle>
+        <bundle>mvn:com.fasterxml.jackson.core/jackson-core/2.8.9</bundle>
+        <bundle>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-smile-provider/2.8.9</bundle>
+        <bundle>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-base/2.8.9</bundle>
+        <bundle>mvn:com.fasterxml.jackson.module/jackson-module-jaxb-annotations/2.8.9</bundle>
+        <bundle>mvn:org.apache.commons/commons-lang3/3.4</bundle>
+    </feature>
+    <feature name="nexus-outreach-plugin" description="com.sonatype.nexus.plugins:nexus-outreach-plugin" version="3.5.2.01">
+        <details>com.sonatype.nexus.plugins:nexus-outreach-plugin</details>
+        <bundle>mvn:com.sonatype.nexus.plugins/nexus-outreach-plugin/3.5.2-01</bundle>
+    </feature>
+    <feature name="nexus-repository-bower" description="com.sonatype.nexus.plugins:nexus-repository-bower" version="3.5.2.01">
+        <details>com.sonatype.nexus.plugins:nexus-repository-bower</details>
+        <bundle>mvn:com.sonatype.nexus.plugins/nexus-repository-bower/3.5.2-01</bundle>
+    </feature>
+    <feature name="nexus-repository-npm" description="com.sonatype.nexus.plugins:nexus-repository-npm" version="3.5.2.01">
+        <details>com.sonatype.nexus.plugins:nexus-repository-npm</details>
+        <feature prerequisite="true" dependency="false">wrap</feature>
+        <bundle>mvn:com.sonatype.nexus.plugins/nexus-repository-npm/3.5.2-01</bundle>
+        <bundle>wrap:mvn:se.sawano.java/alphanumeric-comparator/1.4.1</bundle>
+    </feature>
+    <feature name="nexus-repository-nuget" description="com.sonatype.nexus.plugins:nexus-repository-nuget" version="3.5.2.01">
+        <details>com.sonatype.nexus.plugins:nexus-repository-nuget</details>
+        <feature prerequisite="true" dependency="false">wrap</feature>
+        <bundle>mvn:com.sonatype.nexus.plugins/nexus-repository-nuget/3.5.2-01</bundle>
+        <bundle>wrap:mvn:org.sonatype.sisu/sisu-odata4j/0.0.7</bundle>
+        <bundle>mvn:org.core4j/core4j/0.5</bundle>
+        <bundle>mvn:joda-time/joda-time/2.9.5</bundle>
+        <bundle>mvn:commons-codec/commons-codec/1.10</bundle>
+        <bundle>wrap:mvn:org.codehaus.plexus/plexus-utils/3.0.22</bundle>
+        <bundle>mvn:commons-fileupload/commons-fileupload/1.3.2</bundle>
+        <bundle>mvn:commons-io/commons-io/2.4</bundle>
+        <bundle>mvn:org.apache.commons/commons-collections4/4.1</bundle>
+        <bundle>mvn:org.eclipse.aether/aether-util/1.0.2.v20150114</bundle>
+        <bundle>mvn:org.eclipse.aether/aether-api/1.0.2.v20150114</bundle>
+    </feature>
+    <feature name="nexus-repository-docker" description="com.sonatype.nexus.plugins:nexus-repository-docker" version="3.5.2.01">
+        <details>com.sonatype.nexus.plugins:nexus-repository-docker</details>
+        <bundle>mvn:com.sonatype.nexus.plugins/nexus-repository-docker/3.5.2-01</bundle>
+        <bundle>mvn:commons-lang/commons-lang/2.6</bundle>
+        <bundle>mvn:org.eclipse.aether/aether-util/1.0.2.v20150114</bundle>
+        <bundle>mvn:org.eclipse.aether/aether-api/1.0.2.v20150114</bundle>
+    </feature>
+    <feature name="nexus-repository-pypi" description="com.sonatype.nexus.plugins:nexus-repository-pypi" version="3.5.2.01">
+        <details>com.sonatype.nexus.plugins:nexus-repository-pypi</details>
+        <bundle>mvn:com.sonatype.nexus.plugins/nexus-repository-pypi/3.5.2-01</bundle>
+        <bundle>mvn:org.apache.commons/commons-compress/1.11</bundle>
+        <bundle>mvn:org.tukaani/xz/1.5</bundle>
+        <bundle>mvn:org.jsoup/jsoup/1.9.1</bundle>
+    </feature>
+    <feature name="nexus-repository-rubygems" description="com.sonatype.nexus.plugins:nexus-repository-rubygems" version="3.5.2.01">
+        <details>com.sonatype.nexus.plugins:nexus-repository-rubygems</details>
+        <bundle>mvn:com.sonatype.nexus.plugins/nexus-repository-rubygems/3.5.2-01</bundle>
+        <bundle>mvn:org.apache.commons/commons-compress/1.11</bundle>
+        <bundle>mvn:org.yaml/snakeyaml/1.17</bundle>
+    </feature>
+    <feature name="nexus-repository-gitlfs" description="com.sonatype.nexus.plugins:nexus-repository-gitlfs" version="3.5.2.01">
+        <details>com.sonatype.nexus.plugins:nexus-repository-gitlfs</details>
+        <bundle>mvn:com.sonatype.nexus.plugins/nexus-repository-gitlfs/3.5.2-01</bundle>
+    </feature>
+    <feature name="nexus-repository-yum" description="com.sonatype.nexus.plugins:nexus-repository-yum" version="3.5.2.01">
+        <details>com.sonatype.nexus.plugins:nexus-repository-yum</details>
+        <feature prerequisite="true" dependency="false">wrap</feature>
+        <bundle>mvn:com.sonatype.nexus.plugins/nexus-repository-yum/3.5.2-01</bundle>
+        <bundle>wrap:mvn:org.redline-rpm/redline/1.2.5</bundle>
+        <bundle>wrap:mvn:org.apache.ant/ant/1.9.7</bundle>
+        <bundle>wrap:mvn:org.apache.ant/ant-launcher/1.9.7</bundle>
+        <bundle>mvn:org.apache.commons/commons-compress/1.11</bundle>
+        <bundle>mvn:org.tukaani/xz/1.5</bundle>
+    </feature>
+    <feature name="nexus-rutauth-plugin" description="com.sonatype.nexus.plugins:nexus-rutauth-plugin" version="3.5.2.01">
+        <details>com.sonatype.nexus.plugins:nexus-rutauth-plugin</details>
+        <bundle>mvn:com.sonatype.nexus.plugins/nexus-rutauth-plugin/3.5.2-01</bundle>
+    </feature>
+    <feature name="nexus-repository-apt" description="net.staticsnow:nexus-repository-apt" version="1.0.2">
+        <details>net.staticsnow:nexus-repository-apt</details>
+        <bundle>mvn:net.staticsnow/nexus-repository-apt/1.0.2</bundle>
+    </feature>
+</features>

@@ -79,3 +79,18 @@ This will cause the plugin to be loaded and started with each startup of Nexus R
 
 ### Manually upload a package to a new created repo:
 `curl -u user:pass -X POST -H "Content-Type: multipart/form-data" --data-binary "@package.deb"  http://nexus_url:8081/repository/repo_name/`
+
+
+## Configuring Release Signing
+---------------------------
+
+To configure signing, you need a PGP key. You can generate one by running:
+
+    > gpg --gen-key
+
+Then export public and private keys:
+
+    >  gpg --export-secret-key -a KEY_ID > keypair.txt
+    >  gpg --export -a KEY_ID >> keypair.txt
+
+And use the content of keypair.txt as a keypair for the APT repository in Nexus admin interface.
