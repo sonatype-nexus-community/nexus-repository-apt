@@ -1,0 +1,17 @@
+language: java
+services:
+  - docker
+addons:
+  apt:
+    packages:
+      - oracle-java8-installer
+
+script: "$TRAVIS_BUILD_DIR/travis/build.sh"
+
+cache:
+  directories:
+  - "$HOME/.m2"
+  - "$HOME/.ivy2"
+
+env:
+  global:
