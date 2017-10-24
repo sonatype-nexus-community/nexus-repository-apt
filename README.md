@@ -60,7 +60,7 @@ is running. You will still need to start the bundle using the karaf commands men
 If you are trying to use the APT plugin permanently, it likely makes more sense to do the following:
 
 * Copy the bundle into `<nexus_dir>/system/net/staticsnow/nexus-repository-apt/1.0.2/nexus-repository-apt-1.0.2.jar`
-* Make the following additions marked with + to `<nexus_dir>/system/com/sonatype/nexus/assemblies/nexus-oss-feature/3.x.y/nexus-oss-feature-3.x.y-features.xml` (or `<nexus_dir>/system/com/sonatype/nexus/assemblies/nexus-pro-feature/3.5.0-02/nexus-pro-feature-3.5.0-02-features.xml` if using the Professional version)
+* Make the following additions marked with + to `<nexus_dir>/system/com/sonatype/nexus/assemblies/nexus-oss-feature/3.x.y/nexus-oss-feature-3.x.y-features.xml` (or `<nexus_dir>/system/com/sonatype/nexus/assemblies/nexus-pro-feature/3.x.y/nexus-pro-feature-3.x.y-features.xml` if using the Professional version)
    ```
          <feature prerequisite="false" dependency="false">nexus-repository-rubygems</feature>
    +     <feature prerequisite="false" dependency="false">nexus-repository-apt</feature>
