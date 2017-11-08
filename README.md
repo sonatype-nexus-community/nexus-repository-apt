@@ -14,7 +14,7 @@
 
 ``` docker build -t nexus-repository-apt:3.6.0 .```
 
-### Run a dockercontainer from that image
+### Run a docker container from that image
 
 ``` docker run -d -p 8081:8081 --name nexus-repository-apt:3.6.0 ```
 
