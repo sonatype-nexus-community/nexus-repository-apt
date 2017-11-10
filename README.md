@@ -10,6 +10,16 @@
   cd nexus-repository
   mvn
   ```
+### Build with docker and create an image based on nexus repository 3
+
+``` docker build -t nexus-repository-apt:3.6.0 .```
+
+### Run a docker container from that image
+
+``` docker run -d -p 8081:8081 --name nexus-repository-apt:3.6.0 ```
+
+For further information like how to persist volumes view https://github.com/sonatype/docker-nexus3
+The application is now available from the browser on localhost:8081
 
 ### Install
 * Stop Nexus:
