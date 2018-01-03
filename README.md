@@ -12,11 +12,11 @@
   ```
 ### Build with docker and create an image based on nexus repository 3
 
-``` docker build -t nexus-repository-apt:3.6.0 .```
+``` docker build -t nexus-repository-apt:3.7.1 .```
 
 ### Run a docker container from that image
 
-``` docker run -d -p 8081:8081 --name nexus-repository-apt:3.6.0 ```
+``` docker run -d -p 8081:8081 --name nexus-repository-apt:3.7.1 ```
 
 For further information like how to persist volumes view https://github.com/sonatype/docker-nexus3
 The application is now available from the browser on localhost:8081
@@ -47,7 +47,7 @@ good installation path if you are just testing or doing development on the plugi
   # sudo su - nexus
   $ cd <nexus_dir>/bin
   $ ./nexus run
-  > bundle:install file:///tmp/nexus-repository-apt-1.0.2.jar
+  > bundle:install file:///tmp/nexus-repository-apt-1.0.3.jar
   > bundle:list
   ```
   (look for net.staticsnow:nexus-repository-apt ID, should be the last one)
@@ -59,7 +59,7 @@ good installation path if you are just testing or doing development on the plugi
 
 For more permanent installs of the nexus-repository-apt plugin, follow these instructions:
 
-* Copy the bundle (nexus-repository-apt-1.0.2.jar) into <nexus_dir>/deploy
+* Copy the bundle (nexus-repository-apt-1.0.3.jar) into <nexus_dir>/deploy
 
 This will cause the plugin to be loaded with each restart of Nexus Repository. As well, this folder is monitored
 by Nexus Repository and the plugin should load within 60 seconds of being copied there if Nexus Repository
@@ -69,7 +69,7 @@ is running. You will still need to start the bundle using the karaf commands men
 
 If you are trying to use the APT plugin permanently, it likely makes more sense to do the following:
 
-* Copy the bundle into `<nexus_dir>/system/net/staticsnow/nexus-repository-apt/1.0.2/nexus-repository-apt-1.0.2.jar`
+* Copy the bundle into `<nexus_dir>/system/net/staticsnow/nexus-repository-apt/1.0.3/nexus-repository-apt-1.0.3.jar`
 * Make the following additions marked with + to `<nexus_dir>/system/com/sonatype/nexus/assemblies/nexus-oss-feature/3.x.y/nexus-oss-feature-3.x.y-features.xml` (or `<nexus_dir>/system/com/sonatype/nexus/assemblies/nexus-pro-feature/3.x.y/nexus-pro-feature-3.x.y-features.xml` if using the Professional version)
    ```
          <feature prerequisite="false" dependency="false">nexus-repository-rubygems</feature>
@@ -79,9 +79,9 @@ If you are trying to use the APT plugin permanently, it likely makes more sense 
    ```
    And
    ```
-   + <feature name="nexus-repository-apt" description="net.staticsnow:nexus-repository-apt" version="1.0.2">
+   + <feature name="nexus-repository-apt" description="net.staticsnow:nexus-repository-apt" version="1.0.3">
    +     <details>net.staticsnow:nexus-repository-apt</details>
-   +     <bundle>mvn:net.staticsnow/nexus-repository-apt/1.0.2</bundle>
+   +     <bundle>mvn:net.staticsnow/nexus-repository-apt/1.0.3</bundle>
    + </feature>
     </features>
    ```
