@@ -1,5 +1,7 @@
 # Nexus repository APT plugin
 
+* Version 1.0.3 (master) requires Nexus 3.7.1 *
+
 ### Build
 * Clone the project:
 
