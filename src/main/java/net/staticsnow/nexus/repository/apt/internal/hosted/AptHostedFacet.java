@@ -259,8 +259,8 @@ public class AptHostedFacet
       sqlParams.put(P_BUCKET, AttachedEntityHelper.id(bucket));
       sqlParams.put(P_ASSET_KIND, "DEB");
 
+      // NOTE:  We exclude added assets as well to account for the case where we are replacing an asset
       Set<String> excludeNames = Arrays.stream(changes)
-          .filter(change -> change.action == AssetAction.REMOVED)
           .map(change -> change.asset.name()).collect(Collectors.toSet());
 
       for (ODocument d : tx.browse(SELECT_HOSTED_ASSETS, sqlParams)) {
