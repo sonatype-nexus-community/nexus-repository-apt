@@ -3,14 +3,10 @@
  * 
  * Copyright (c) 2016-Present Michael Poindexter.
  * 
- * This file is licensed under the terms of the GNU General Public License Version 2.0
- * https://www.gnu.org/licenses/gpl-2.0.en.html
- * with the following clarification:
- * 
- * Combining this software with other components in a form that allows this software
- * to be automatically loaded constitutes creation of a derived work.  Any distribution
- * of Nexus that includes this plugin must be licensed under the GPL or compatible
- * licenses.
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License Version 1.0,
+ * which accompanies this distribution and is available at http://www.eclipse.org/legal/epl-v10.html.
+ *
+ * "Sonatype" and "Sonatype Nexus" are trademarks of Sonatype, Inc.
  */
 /*global Ext, NX*/
 
