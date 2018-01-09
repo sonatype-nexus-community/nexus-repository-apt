@@ -5,7 +5,7 @@
 ### Build
 * Clone the project:
 
-  `git clone https://github.com/mpoindexter/nexus-repository-apt`
+  `git clone https://github.com/sonatype-nexus-community/nexus-repository-apt`
 * Build the pluguin:
 
   ```
@@ -58,3 +58,26 @@ This will cause the plugin to be loaded and started with each startup of Nexus R
 
 ### Create a snapshot of the current package lists for the repo that can be pulled from:
 `curl -u user:pass -X MKCOL http://nexus_url:8081/repository/repo_name/snapshots/$SNAPSHOT_ID`
+
+## The Fine Print
+
+It is worth noting that this is **NOT SUPPORTED** by Sonatype, and is a contribution of Mike Poindexter's
+plus us to the open source community (read: you!)
+
+Remember:
+
+* Use this contribution at the risk tolerance that you have
+* Do **NOT** file Sonatype support tickets related to APT support
+* **DO** file issues here on GitHub, so that the community can pitch in
+
+Phew, that was easier than I thought. Last but not least of all:
+
+Have fun building and using this plugin on the Nexus platform, we are glad to have you here!
+
+## Getting help
+
+Looking to contribute to our code but need some help? There's a few ways to get information:
+
+* Chat with us on [Gitter](https://gitter.im/sonatype/nexus-developers)
+* Check out the [Nexus3](http://stackoverflow.com/questions/tagged/nexus3) tag on Stack Overflow
+* Check out the [Nexus Repository User List](https://groups.google.com/a/glists.sonatype.com/forum/?hl=en#!forum/nexus-users)
