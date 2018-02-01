@@ -9,7 +9,7 @@
 * Build the pluguin:
 
   ```
-  cd nexus-repository
+  cd nexus-repository-apt
   mvn
   ```
 ### Build with docker and create an image based on nexus repository 3
