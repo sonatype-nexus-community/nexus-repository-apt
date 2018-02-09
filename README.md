@@ -1,8 +1,21 @@
 # Nexus repository APT plugin
 
-*Version 1.0.3 (master) requires Nexus 3.7.1 - for older Nexus versions use tag 1.0.2*
+![Join the chat at https://gitter.im/sonatype/nexus-developers](https://badges.gitter.im/sonatype/nexus-developers.svg)](https://gitter.im/sonatype/nexus-developers?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
+* Version 1.0.3 (master) requires Nexus 3.7.1 - for older Nexus versions use tag 1.0.2*
+
+## Developing
+
+### Requirements
+
+* [Apache Maven 3.3.3+](https://maven.apache.org/install.html)
+* [Java 8+](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
+* Network access to https://repository.sonatype.org/content/groups/sonatype-public-grid
+
+Also, there is a good amount of information available at [Bundle Development](https://help.sonatype.com/display/NXRM3/Bundle+Development)
 
 ### Build
+
 * Clone the project:
 
   `git clone https://github.com/sonatype-nexus-community/nexus-repository-apt`
@@ -22,6 +35,10 @@
 
 For further information like how to persist volumes view https://github.com/sonatype/docker-nexus3
 The application is now available from the browser on localhost:8081
+
+## Using APT With Nexus Repository Manager 3
+
+[We have detailed instructions on how to get started here!](docs/APT_USER_DOCUMENTATION.md)
 
 ### Install
 * Stop Nexus:
