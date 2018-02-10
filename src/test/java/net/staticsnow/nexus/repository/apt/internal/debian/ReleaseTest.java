@@ -44,55 +44,51 @@ public class ReleaseTest
 
   @Test
   public void getOriginTest() {
-    ControlField field = new ControlField(CONTROL_FILE_ORIGIN, CONTROL_FIELD_TEST_RETURN_VALUE);
-    Optional<ControlField> optionalField = Optional.of(field);
-    when(controlFile.getField(CONTROL_FILE_ORIGIN)).thenReturn(optionalField);
+    setupControlField(CONTROL_FILE_ORIGIN, CONTROL_FIELD_TEST_RETURN_VALUE);
 
     assertThat(underTest.getOrigin().get(), is(CONTROL_FIELD_TEST_RETURN_VALUE));
   }
 
   @Test
   public void getLabelTest() {
-    ControlField field = new ControlField(CONTROL_FILE_LABEL, CONTROL_FIELD_TEST_RETURN_VALUE);
-    Optional<ControlField> optionalField = Optional.of(field);
-    when(controlFile.getField(CONTROL_FILE_LABEL)).thenReturn(optionalField);
+    setupControlField(CONTROL_FILE_LABEL, CONTROL_FIELD_TEST_RETURN_VALUE);
 
     assertThat(underTest.getLabel().get(), is(CONTROL_FIELD_TEST_RETURN_VALUE));
   }
 
   @Test
   public void getSuiteTest() {
-    ControlField field = new ControlField(CONTROL_FILE_SUITE, CONTROL_FIELD_TEST_RETURN_VALUE);
-    Optional<ControlField> optionalField = Optional.of(field);
-    when(controlFile.getField(CONTROL_FILE_SUITE)).thenReturn(optionalField);
+    setupControlField(CONTROL_FILE_SUITE, CONTROL_FIELD_TEST_RETURN_VALUE);
 
     assertThat(underTest.getSuite().get(), is(CONTROL_FIELD_TEST_RETURN_VALUE));
   }
 
   @Test
   public void getVersionTest() {
-    ControlField field = new ControlField(CONTROL_FILE_VERSION, CONTROL_FIELD_TEST_RETURN_VALUE);
-    Optional<ControlField> optionalField = Optional.of(field);
-    when(controlFile.getField(CONTROL_FILE_VERSION)).thenReturn(optionalField);
+    setupControlField(CONTROL_FILE_VERSION, CONTROL_FIELD_TEST_RETURN_VALUE);
 
     assertThat(underTest.getVersion().get(), is(CONTROL_FIELD_TEST_RETURN_VALUE));
   }
 
   @Test
   public void getCodenameTest() {
-    ControlField field = new ControlField(CONTROL_FILE_CODENAME, CONTROL_FIELD_TEST_RETURN_VALUE);
-    Optional<ControlField> optionalField = Optional.of(field);
-    when(controlFile.getField(CONTROL_FILE_CODENAME)).thenReturn(optionalField);
+    setupControlField(CONTROL_FILE_CODENAME, CONTROL_FIELD_TEST_RETURN_VALUE);
 
     assertThat(underTest.getCodename().get(), is(CONTROL_FIELD_TEST_RETURN_VALUE));
   }
 
   @Test
   public void getDescriptionTest() {
-    ControlField field = new ControlField(CONTROL_FILE_DESCRIPTION, CONTROL_FIELD_TEST_RETURN_VALUE);
-    Optional<ControlField> optionalField = Optional.of(field);
-    when(controlFile.getField(CONTROL_FILE_DESCRIPTION)).thenReturn(optionalField);
+    setupControlField(CONTROL_FILE_DESCRIPTION, CONTROL_FIELD_TEST_RETURN_VALUE);
 
     assertThat(underTest.getDescription().get(), is(CONTROL_FIELD_TEST_RETURN_VALUE));
+  }
+
+  private void setupControlField(final String controlFieldName,
+                                 final String controlFieldReturnValue)
+  {
+    ControlField field = new ControlField(controlFieldName, controlFieldReturnValue);
+    Optional<ControlField> optionalField = Optional.of(field);
+    when(controlFile.getField(controlFieldName)).thenReturn(optionalField);
   }
 }
