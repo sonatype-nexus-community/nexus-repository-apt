@@ -1,15 +1,15 @@
-ARG NEXUS_VERSION=3.7.1
+ARG NEXUS_VERSION=3.8.0
 
 FROM maven:3-jdk-8-alpine AS build
-ARG NEXUS_VERSION=3.7.1
+ARG NEXUS_VERSION=3.8.0
 ARG NEXUS_BUILD=02
 
 COPY . /nexus-repository-apt/
-RUN cd /nexus-repository-apt/; sed -i "s/3.7.1-02/${NEXUS_VERSION}-${NEXUS_BUILD}/g" pom.xml; \
+RUN cd /nexus-repository-apt/; sed -i "s/3.8.0-02/${NEXUS_VERSION}-${NEXUS_BUILD}/g" pom.xml; \
     mvn;
 
 FROM sonatype/nexus3:$NEXUS_VERSION
-ARG NEXUS_VERSION=3.7.1
+ARG NEXUS_VERSION=3.8.0
 ARG NEXUS_BUILD=02
 USER root
 RUN mkdir /opt/sonatype/nexus/system/net/staticsnow/ /opt/sonatype/nexus/system/net/staticsnow/nexus-repository-apt/ /opt/sonatype/nexus/system/net/staticsnow/nexus-repository-apt/1.0.3/; \
