@@ -93,7 +93,7 @@ public class ReleaseTest
     setupControlField(CONTROL_FILE_ARCHITECTURES, CONTROL_FIELD_ARCHITECTURES_RETURN_VALUE);
 
     assertThat(underTest.getArchitectures().get(0), is(CONTROL_FIELD_ARCHITECTURES_RETURN_VALUE));
-    assertThat(underTest.getComponents().size(), is(1));
+    assertThat(underTest.getArchitectures().size(), is(1));
   }
 
   @Test
