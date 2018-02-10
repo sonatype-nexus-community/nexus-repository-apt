@@ -27,6 +27,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class ControlFileTest
     extends TestSupport
 {
+  private static final String TEST_KEY = "test";
+  private static final String TEST_VALUE = "test";
   ControlFile underTest;
   ControlField controlField;
 
@@ -40,14 +42,14 @@ public class ControlFileTest
 
   @Test
   public void getFieldTest() {
-    setUp("test", "test");
+    setUp(TEST_KEY, TEST_VALUE);
 
-    assertThat(underTest.getField("test").get(), is(equalTo(controlField)));
+    assertThat(underTest.getField(TEST_KEY).get(), is(equalTo(controlField)));
   }
 
   @Test
   public void getFieldsTest() {
-    setUp("test", "test");
+    setUp(TEST_KEY, TEST_VALUE);
 
     assertThat(underTest.getFields().size(), is(equalTo(1)));
     assertThat(underTest.getFields().get(0), is(instanceOf(ControlField.class)));
@@ -55,7 +57,7 @@ public class ControlFileTest
 
   @Test
   public void getParagraphsTest() {
-    setUp("test", "test");
+    setUp(TEST_KEY, TEST_VALUE);
 
     assertThat(underTest.getParagraphs().size(), is(equalTo(1)));
     assertThat(underTest.getParagraphs().get(0), is(instanceOf(Paragraph.class)));
