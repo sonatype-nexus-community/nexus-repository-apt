@@ -50,5 +50,4 @@ public class ControlFileTest
 
     assertThat(underTest.getFields().size(), is(equalTo(1)));
   }
-
 }
