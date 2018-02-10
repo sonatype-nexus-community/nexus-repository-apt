@@ -20,7 +20,9 @@ import net.staticsnow.nexus.repository.apt.internal.debian.ControlFile.Paragraph
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ControlFileTest
@@ -49,6 +51,7 @@ public class ControlFileTest
     setUp("test", "test");
 
     assertThat(underTest.getFields().size(), is(equalTo(1)));
+    assertThat(underTest.getFields().get(0), is(instanceOf(ControlField.class)));
   }
 
   @Test
@@ -56,5 +59,6 @@ public class ControlFileTest
     setUp("test", "test");
 
     assertThat(underTest.getParagraphs().size(), is(equalTo(1)));
+    assertThat(underTest.getParagraphs().get(0), is(instanceOf(Paragraph.class)));
   }
 }
