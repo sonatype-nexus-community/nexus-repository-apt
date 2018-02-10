@@ -1,6 +1,6 @@
 # Nexus repository APT plugin
 
-*Version 1.0.3 (master) requires Nexus 3.7.1 - for older Nexus versions use tag 1.0.2*
+*Version 1.0.4 (master) requires Nexus 3.8.0 - for older Nexus versions use tag 1.0.2*
 
 ### Build
 * Clone the project:
@@ -14,11 +14,11 @@
   ```
 ### Build with docker and create an image based on nexus repository 3
 
-``` docker build -t nexus-repository-apt:3.7.1 .```
+``` docker build -t nexus-repository-apt:3.8.0 .```
 
 ### Run a docker container from that image
 
-``` docker run -d -p 8081:8081 --name nexus-repository-apt:3.7.1 ```
+``` docker run -d -p 8081:8081 --name nexus-repository-apt:3.8.0 ```
 
 For further information like how to persist volumes view https://github.com/sonatype/docker-nexus3
 The application is now available from the browser on localhost:8081
