@@ -27,12 +27,16 @@ public class ReleaseTest
     extends TestSupport
 {
   private static final String CONTROL_FIELD_TEST_RETURN_VALUE = "test";
+  private static final String CONTROL_FIELD_ARCHITECTURES_RETURN_VALUE = "amd64";
+  private static final String CONTROL_FIELD_COMPONENTS_RETURN_VALUE = "components";
   private static final String CONTROL_FILE_ORIGIN = "Origin";
   private static final String CONTROL_FILE_LABEL = "Label";
   private static final String CONTROL_FILE_SUITE = "Suite";
   private static final String CONTROL_FILE_VERSION = "Version";
   private static final String CONTROL_FILE_CODENAME = "Codename";
   private static final String CONTROL_FILE_DESCRIPTION = "Description";
+  private static final String CONTROL_FILE_ARCHITECTURES = "Architectures";
+  private static final String CONTROL_FILE_COMPONENTS = "Components";
 
   Release underTest;
 
@@ -82,6 +86,22 @@ public class ReleaseTest
     setupControlField(CONTROL_FILE_DESCRIPTION, CONTROL_FIELD_TEST_RETURN_VALUE);
 
     assertThat(underTest.getDescription().get(), is(CONTROL_FIELD_TEST_RETURN_VALUE));
+  }
+
+  @Test
+  public void getArchitecturesTest() {
+    setupControlField(CONTROL_FILE_ARCHITECTURES, CONTROL_FIELD_ARCHITECTURES_RETURN_VALUE);
+
+    assertThat(underTest.getArchitectures().get(0), is(CONTROL_FIELD_ARCHITECTURES_RETURN_VALUE));
+    assertThat(underTest.getComponents().size(), is(1));
+  }
+
+  @Test
+  public void getComponentsTest() {
+    setupControlField(CONTROL_FILE_COMPONENTS, CONTROL_FIELD_COMPONENTS_RETURN_VALUE);
+
+    assertThat(underTest.getComponents().get(0), is(CONTROL_FIELD_COMPONENTS_RETURN_VALUE));
+    assertThat(underTest.getComponents().size(), is(1));
   }
 
   private void setupControlField(final String controlFieldName,
