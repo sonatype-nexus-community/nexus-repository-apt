@@ -50,4 +50,11 @@ public class ControlFileTest
 
     assertThat(underTest.getFields().size(), is(equalTo(1)));
   }
+
+  @Test
+  public void getParagraphsTest() {
+    setUp("test", "test");
+
+    assertThat(underTest.getParagraphs().size(), is(equalTo(1)));
+  }
 }
