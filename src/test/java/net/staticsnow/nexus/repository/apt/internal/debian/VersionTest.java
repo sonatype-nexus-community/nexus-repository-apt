@@ -28,6 +28,8 @@ public class VersionTest
   private static final String HIGHER_EPOCH_TEST_VERSION = "3:7.3.429-2ubuntu2.1";
   Version underTest;
 
+  // TODO: There are a plethora of Debian version permutations that merit testing beyond this set, do that
+
   @Test
   public void compareToTestIdenticalVersion() {
     underTest = setUpVersion(TEST_VERSION);
