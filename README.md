@@ -35,7 +35,7 @@ The application is now available from the browser on localhost:8081
   ./nexus stop
   ```
 
-* Copy the bundle into `<nexus_dir>/system/net/staticsnow/nexus-repository-apt/1.0.3/nexus-repository-apt-1.0.3.jar`
+* Copy the bundle into `<nexus_dir>/system/net/staticsnow/nexus-repository-apt/1.0.4/nexus-repository-apt-1.0.4.jar`
 * Make the following additions marked with + to `<nexus_dir>/system/com/sonatype/nexus/assemblies/nexus-oss-feature/3.x.y/nexus-oss-feature-3.x.y-features.xml` (or `<nexus_dir>/system/com/sonatype/nexus/assemblies/nexus-pro-feature/3.x.y/nexus-pro-feature-3.x.y-features.xml` if using the Professional version)
    ```
          <feature prerequisite="false" dependency="false">nexus-repository-rubygems</feature>
@@ -45,9 +45,9 @@ The application is now available from the browser on localhost:8081
    ```
    And
    ```
-   + <feature name="nexus-repository-apt" description="net.staticsnow:nexus-repository-apt" version="1.0.3">
+   + <feature name="nexus-repository-apt" description="net.staticsnow:nexus-repository-apt" version="1.0.4">
    +     <details>net.staticsnow:nexus-repository-apt</details>
-   +     <bundle>mvn:net.staticsnow/nexus-repository-apt/1.0.3</bundle>
+   +     <bundle>mvn:net.staticsnow/nexus-repository-apt/1.0.4</bundle>
    + </feature>
     </features>
    ```
