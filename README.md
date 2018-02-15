@@ -20,8 +20,9 @@
 
 ``` docker run -d -p 8081:8081 --name nexus-repository-apt:3.8.0 ```
 
-For further information like how to persist volumes view https://github.com/sonatype/docker-nexus3
-The application is now available from the browser on localhost:8081
+For further information like how to persist volumes check out [the GitHub Repo for the official Nexus Repository 3 Docker image](https://github.com/sonatype/docker-nexus3).
+
+The application will now be available from your browser at http://localhost:8081
 
 ### Install
 * Stop Nexus:
