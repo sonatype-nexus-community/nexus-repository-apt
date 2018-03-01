@@ -14,11 +14,11 @@
   ```
 ### Build with docker and create an image based on nexus repository 3
 
-``` docker build -t nexus-repository-apt:3.8.0 .```
+``` docker build -t nexus-repository-apt:3.9.0 .```
 
 ### Run a docker container from that image
 
-``` docker run -d -p 8081:8081 --name nexus-repository-apt:3.8.0 ```
+``` docker run -d -p 8081:8081 --name nexus-repository-apt:3.9.0 ```
 
 For further information like how to persist volumes check out [the GitHub Repo for the official Nexus Repository 3 Docker image](https://github.com/sonatype/docker-nexus3).
 
