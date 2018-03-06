@@ -1,5 +1,7 @@
 # Nexus repository APT plugin
 
+[![Build Status](https://travis-ci.org/sonatype-nexus-community/nexus-repository-apt.svg?branch=master)](https://travis-ci.org/sonatype-nexus-community/nexus-repository-apt)
+
 *Version 1.0.4 (master) requires Nexus 3.8.0 - for older Nexus versions use tag 1.0.2*
 
 ### Build
