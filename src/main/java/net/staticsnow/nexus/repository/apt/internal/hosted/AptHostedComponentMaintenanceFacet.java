@@ -36,14 +36,14 @@ public class AptHostedComponentMaintenanceFacet
 {
   @Transactional(retryOn = ONeedRetryException.class)
   @Override
-  protected void deleteAssetTx(EntityId assetId) {
+  protected void deleteAssetTx(EntityId assetId, boolean deleteBlobs) {
     StorageTx tx = UnitOfWork.currentTx();
     Asset asset = tx.findAsset(assetId, tx.findBucket(getRepository()));
     if (asset == null) {
       return;
     }
     String assetKind = asset.formatAttributes().get(P_ASSET_KIND, String.class);
-    super.deleteAssetTx(assetId);
+    super.deleteAssetTx(assetId, deleteBlobs);
     if ("DEB".equals(assetKind)) {
       try {
         getRepository().facet(AptHostedFacet.class)
