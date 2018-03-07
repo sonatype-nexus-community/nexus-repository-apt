@@ -1,6 +1,6 @@
 # Nexus repository APT plugin
 
-*Version 1.0.4 (master) requires Nexus 3.8.0 - for older Nexus versions use tag 1.0.2*
+*Version 1.0.5 (master) requires Nexus 3.9.0 - for older Nexus versions use tag 1.0.2*
 
 ### Build
 * Clone the project:
@@ -14,11 +14,11 @@
   ```
 ### Build with docker and create an image based on nexus repository 3
 
-``` docker build -t nexus-repository-apt:3.8.0 .```
+``` docker build -t nexus-repository-apt:3.9.0 .```
 
 ### Run a docker container from that image
 
-``` docker run -d -p 8081:8081 --name nexus-repository-apt:3.8.0 ```
+``` docker run -d -p 8081:8081 --name nexus-repository-apt:3.9.0 ```
 
 For further information like how to persist volumes check out [the GitHub Repo for the official Nexus Repository 3 Docker image](https://github.com/sonatype/docker-nexus3).
 
@@ -36,7 +36,7 @@ The application will now be available from your browser at http://localhost:8081
   ./nexus stop
   ```
 
-* Copy the bundle into `<nexus_dir>/system/net/staticsnow/nexus-repository-apt/1.0.4/nexus-repository-apt-1.0.4.jar`
+* Copy the bundle into `<nexus_dir>/system/net/staticsnow/nexus-repository-apt/1.0.5/nexus-repository-apt-1.0.5.jar`
 * Make the following additions marked with + to `<nexus_dir>/system/com/sonatype/nexus/assemblies/nexus-oss-feature/3.x.y/nexus-oss-feature-3.x.y-features.xml` (or `<nexus_dir>/system/com/sonatype/nexus/assemblies/nexus-pro-feature/3.x.y/nexus-pro-feature-3.x.y-features.xml` if using the Professional version)
    ```
          <feature prerequisite="false" dependency="false">nexus-repository-rubygems</feature>
@@ -46,9 +46,9 @@ The application will now be available from your browser at http://localhost:8081
    ```
    And
    ```
-   + <feature name="nexus-repository-apt" description="net.staticsnow:nexus-repository-apt" version="1.0.4">
+   + <feature name="nexus-repository-apt" description="net.staticsnow:nexus-repository-apt" version="1.0.5">
    +     <details>net.staticsnow:nexus-repository-apt</details>
-   +     <bundle>mvn:net.staticsnow/nexus-repository-apt/1.0.4</bundle>
+   +     <bundle>mvn:net.staticsnow/nexus-repository-apt/1.0.5</bundle>
    + </feature>
     </features>
    ```
