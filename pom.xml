@@ -10,7 +10,7 @@
   <groupId>net.staticsnow</groupId>
   <artifactId>nexus-repository-apt</artifactId>
   <name>${project.groupId}:${project.artifactId}</name>
-  <version>1.0.4</version>
+  <version>1.0.5</version>
   <packaging>bundle</packaging>
 
   <dependencies>
