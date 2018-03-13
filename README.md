@@ -39,11 +39,10 @@ The application will now be available from your browser at http://localhost:8081
   ```
 
 * Copy the bundle into `<nexus_dir>/system/net/staticsnow/nexus-repository-apt/1.0.5/nexus-repository-apt-1.0.5.jar`
-* Make the following additions marked with + to `<nexus_dir>/system/com/sonatype/nexus/assemblies/nexus-oss-feature/3.x.y/nexus-oss-feature-3.x.y-features.xml` (or `<nexus_dir>/system/com/sonatype/nexus/assemblies/nexus-pro-feature/3.x.y/nexus-pro-feature-3.x.y-features.xml` if using the Professional version)
+* Make the following additions marked with + to `<nexus_dir>/system/org/sonatype/nexus/assemblies/nexus-core-feature/3.x.y/nexus-core-feature-3.x.y-features.xml`
    ```
-         <feature prerequisite="false" dependency="false">nexus-repository-rubygems</feature>
+         <feature prerequisite="false" dependency="false">nexus-repository-maven</feature>
    +     <feature prerequisite="false" dependency="false">nexus-repository-apt</feature>
-         <feature prerequisite="false" dependency="false">nexus-repository-gitlfs</feature>
      </feature>
    ```
    And
@@ -51,6 +50,7 @@ The application will now be available from your browser at http://localhost:8081
    + <feature name="nexus-repository-apt" description="net.staticsnow:nexus-repository-apt" version="1.0.5">
    +     <details>net.staticsnow:nexus-repository-apt</details>
    +     <bundle>mvn:net.staticsnow/nexus-repository-apt/1.0.5</bundle>
+   +     <bundle>mvn:org.apache.commons/commons-compress/1.11</bundle>
    + </feature>
     </features>
    ```
