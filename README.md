@@ -43,10 +43,10 @@ When something like this:
 Started Sonatype Nexus OSS 3.10.0-04
 
 -------------------------------------------------
-2018-04-28 16:14:23,529+0000 INFO  [qtp1359854998-49] *UNKNOWN org.apache.shiro.session.mgt.AbstractValidatingSessionManager - Enabling session validation scheduler...
+
 ```
 
-will be displayed in a couple of minutes, then the application will be available from a browser at http://localhost:8081
+will be displayed in a couple of minutes, then the application will be available from a browser at http://localhost:8081. When the Nexus repository has been loaded one could login by entering `admin` as a username and `admin123` as a password.
 
 ### Install
 * Stop Nexus:
