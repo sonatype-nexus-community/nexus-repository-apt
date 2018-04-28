@@ -16,15 +16,37 @@
   ```
 ### Build with docker and create an image based on nexus repository 3
 
-``` docker build -t nexus-repository-apt:3.9.0 .```
+```
+docker build -t nexus-repository-apt:3.10.0-04 .
+```
 
 ### Run a docker container from that image
 
-``` docker run -d -p 8081:8081 --name nexus-repository-apt:3.9.0 ```
+```
+docker run -d -p 8081:8081 -p 9999:9999 --name nexus-apt nexus-repository-apt:3.10.0-04
+```
 
 For further information like how to persist volumes check out [the GitHub Repo for the official Nexus Repository 3 Docker image](https://github.com/sonatype/docker-nexus3).
 
-The application will now be available from your browser at http://localhost:8081
+Check the docker log by issuing:
+
+```
+docker logs -f nexus-apt
+```
+
+When something like this:
+
+```
+2018-04-28 16:13:56,547+0000 INFO  [jetty-main-1] *SYSTEM org.sonatype.nexus.bootstrap.jetty.JettyServer -
+-------------------------------------------------
+
+Started Sonatype Nexus OSS 3.10.0-04
+
+-------------------------------------------------
+2018-04-28 16:14:23,529+0000 INFO  [qtp1359854998-49] *UNKNOWN org.apache.shiro.session.mgt.AbstractValidatingSessionManager - Enabling session validation scheduler...
+```
+
+will be displayed in a couple of minutes, then the application will be available from a browser at http://localhost:8081
 
 ### Install
 * Stop Nexus:
