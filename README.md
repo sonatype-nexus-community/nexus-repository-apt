@@ -2,13 +2,15 @@
 
 [![Build Status](https://travis-ci.org/sonatype-nexus-community/nexus-repository-apt.svg?branch=master)](https://travis-ci.org/sonatype-nexus-community/nexus-repository-apt)
 
-*Version 1.0.5 (master) requires Nexus 3.9.0 - for older Nexus versions use tag 1.0.2*
+* Version 1.0.6 (master) is for Nexus Repo 3.11.0
+* Version 1.0.5 requires Nexus Repo 3.9.0
+* For older Nexus Repo versions use tag 1.0.2
 
 ### Build
 * Clone the project:
 
   `git clone https://github.com/sonatype-nexus-community/nexus-repository-apt`
-* Build the pluguin:
+* Build the plugin:
 
   ```
   cd nexus-repository-apt
@@ -16,11 +18,11 @@
   ```
 ### Build with docker and create an image based on nexus repository 3
 
-``` docker build -t nexus-repository-apt:3.9.0 .```
+``` docker build -t nexus-repository-apt:3.11.0 .```
 
 ### Run a docker container from that image
 
-``` docker run -d -p 8081:8081 --name nexus-repository-apt:3.9.0 ```
+``` docker run -d -p 8081:8081 --name nexus-repository-apt:3.11.0 ```
 
 For further information like how to persist volumes check out [the GitHub Repo for the official Nexus Repository 3 Docker image](https://github.com/sonatype/docker-nexus3).
 
@@ -38,7 +40,7 @@ The application will now be available from your browser at http://localhost:8081
   ./nexus stop
   ```
 
-* Copy the bundle into `<nexus_dir>/system/net/staticsnow/nexus-repository-apt/1.0.5/nexus-repository-apt-1.0.5.jar`
+* Copy the bundle into `<nexus_dir>/system/net/staticsnow/nexus-repository-apt/1.0.6/nexus-repository-apt-1.0.6.jar`
 * Make the following additions marked with + to `<nexus_dir>/system/org/sonatype/nexus/assemblies/nexus-core-feature/3.x.y/nexus-core-feature-3.x.y-features.xml`
    ```
          <feature prerequisite="false" dependency="false">nexus-repository-maven</feature>
@@ -47,9 +49,9 @@ The application will now be available from your browser at http://localhost:8081
    ```
    And
    ```
-   + <feature name="nexus-repository-apt" description="net.staticsnow:nexus-repository-apt" version="1.0.5">
+   + <feature name="nexus-repository-apt" description="net.staticsnow:nexus-repository-apt" version="1.0.6">
    +     <details>net.staticsnow:nexus-repository-apt</details>
-   +     <bundle>mvn:net.staticsnow/nexus-repository-apt/1.0.5</bundle>
+   +     <bundle>mvn:net.staticsnow/nexus-repository-apt/1.0.6</bundle>
    +     <bundle>mvn:org.apache.commons/commons-compress/1.11</bundle>
    + </feature>
     </features>
