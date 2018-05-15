@@ -52,7 +52,7 @@ The application will now be available from your browser at http://localhost:8081
    + <feature name="nexus-repository-apt" description="net.staticsnow:nexus-repository-apt" version="1.0.6">
    +     <details>net.staticsnow:nexus-repository-apt</details>
    +     <bundle>mvn:net.staticsnow/nexus-repository-apt/1.0.6</bundle>
-   +     <bundle>mvn:org.apache.commons/commons-compress/1.16.1</bundle>
+   +     <bundle>mvn:org.apache.commons/commons-compress/1.16.1</bundle>
    + </feature>
     </features>
    ```
