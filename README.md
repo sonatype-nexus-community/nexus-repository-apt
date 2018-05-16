@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/sonatype-nexus-community/nexus-repository-apt.svg?branch=master)](https://travis-ci.org/sonatype-nexus-community/nexus-repository-apt)
 
-* Version 1.0.6 (master) is for Nexus Repo 3.11.0
+* Version 1.0.7 (master) is for Nexus Repo 3.11.0
 * Version 1.0.5 requires Nexus Repo 3.9.0
 * For older Nexus Repo versions use tag 1.0.2
 
@@ -22,7 +22,7 @@
 
 ### Run a docker container from that image
 
-``` docker run -d -p 8081:8081 --name nexus-repository-apt:3.11.0 ```
+``` docker run -d -p 8081:8081 --name nexus-server nexus-repository-apt:3.11.0 ```
 
 For further information like how to persist volumes check out [the GitHub Repo for the official Nexus Repository 3 Docker image](https://github.com/sonatype/docker-nexus3).
 
@@ -40,7 +40,7 @@ The application will now be available from your browser at http://localhost:8081
   ./nexus stop
   ```
 
-* Copy the bundle into `<nexus_dir>/system/net/staticsnow/nexus-repository-apt/1.0.6/nexus-repository-apt-1.0.6.jar`
+* Copy the bundle into `<nexus_dir>/system/net/staticsnow/nexus-repository-apt/1.0.7/nexus-repository-apt-1.0.7.jar`
 * Make the following additions marked with + to `<nexus_dir>/system/org/sonatype/nexus/assemblies/nexus-core-feature/3.x.y/nexus-core-feature-3.x.y-features.xml`
    ```
          <feature prerequisite="false" dependency="false">nexus-repository-maven</feature>
@@ -49,9 +49,9 @@ The application will now be available from your browser at http://localhost:8081
    ```
    And
    ```
-   + <feature name="nexus-repository-apt" description="net.staticsnow:nexus-repository-apt" version="1.0.6">
+   + <feature name="nexus-repository-apt" description="net.staticsnow:nexus-repository-apt" version="1.0.7">
    +     <details>net.staticsnow:nexus-repository-apt</details>
-   +     <bundle>mvn:net.staticsnow/nexus-repository-apt/1.0.6</bundle>
+   +     <bundle>mvn:net.staticsnow/nexus-repository-apt/1.0.7</bundle>
    +     <bundle>mvn:org.apache.commons/commons-compress/1.16.1</bundle>
    + </feature>
     </features>

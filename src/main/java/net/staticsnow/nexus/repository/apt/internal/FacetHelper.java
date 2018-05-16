@@ -91,6 +91,14 @@ public class FacetHelper
     return content;
   }
 
+  public static String buildAssetName(String packageName, String version, String architecture) {
+    return packageName + "_" + version + "_" + architecture + ".deb";
+  }
+
+  public static String buildAssetPath(String packageName, String version, String architecture) {
+    return "pool/" + packageName.substring(0, 1) + "/" + packageName + "/" + buildAssetName(packageName, version, architecture);
+  }
+
   private FacetHelper() {
     //empty
   }
