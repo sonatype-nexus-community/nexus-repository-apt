@@ -15,6 +15,9 @@ target/
 *.iws
 .idea/
 
+# VS Code
+.vscode/
+
 # OrientDB
 .orientdb_history
 

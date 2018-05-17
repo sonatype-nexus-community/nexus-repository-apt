@@ -19,7 +19,6 @@ import static org.sonatype.nexus.repository.storage.MetadataNodeEntityAdapter.P_
 import static org.sonatype.nexus.repository.storage.MetadataNodeEntityAdapter.P_NAME;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,16 +31,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-import java.util.zip.GZIPInputStream;
 
 import javax.inject.Named;
 
-import org.apache.commons.compress.archivers.ArchiveEntry;
-import org.apache.commons.compress.archivers.ar.ArArchiveInputStream;
-import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
-import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.input.CloseShieldInputStream;
 import org.apache.http.client.utils.DateUtils;
 import org.bouncycastle.openpgp.PGPException;
 import org.sonatype.nexus.common.hash.HashAlgorithm;
@@ -70,10 +63,10 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import net.staticsnow.nexus.repository.apt.AptFacet;
 import net.staticsnow.nexus.repository.apt.internal.AptMimeTypes;
+import net.staticsnow.nexus.repository.apt.internal.AptPackageParser;
 import net.staticsnow.nexus.repository.apt.internal.FacetHelper;
 import net.staticsnow.nexus.repository.apt.internal.debian.ControlFile;
 import net.staticsnow.nexus.repository.apt.internal.debian.ControlFile.Paragraph;
-import net.staticsnow.nexus.repository.apt.internal.debian.ControlFileParser;
 import net.staticsnow.nexus.repository.apt.internal.debian.Version;
 import net.staticsnow.nexus.repository.apt.internal.gpg.AptSigningFacet;
 
@@ -121,72 +114,49 @@ public class AptHostedFacet
   }
 
   @TransactionalStoreBlob
-  public void ingestAsset(Payload body) throws IOException, PGPException {
-    AptFacet aptFacet = getRepository().facet(AptFacet.class);
+  public Asset ingestAsset(Payload body) throws IOException, PGPException {
     StorageFacet storageFacet = facet(StorageFacet.class);
-    StorageTx tx = UnitOfWork.currentTx();
-    Bucket bucket = tx.findBucket(getRepository());
-
-    ControlFile control = null;
-    try (TempBlob tempBlob = storageFacet.createTempBlob(body, FacetHelper.hashAlgorithms);
-         ArArchiveInputStream is = new ArArchiveInputStream(tempBlob.get())) {
-      ArchiveEntry debEntry;
-      while ((debEntry = is.getNextEntry()) != null) {
-        InputStream controlStream;
-        switch (debEntry.getName()) {
-          case "control.tar":
-            controlStream = new CloseShieldInputStream(is);
-            break;
-          case "control.tar.gz":
-            controlStream = new GZIPInputStream(new CloseShieldInputStream(is));
-            break;
-          case "control.tar.xz":
-            controlStream = new XZCompressorInputStream(new CloseShieldInputStream(is));
-          default:
-            continue;
-        }
-
-        try (TarArchiveInputStream controlTarStream = new TarArchiveInputStream(controlStream)) {
-          ArchiveEntry tarEntry;
-          while ((tarEntry = controlTarStream.getNextEntry()) != null) {
-            if (tarEntry.getName().equals("control") || tarEntry.getName().equals("./control")) {
-              control = new ControlFileParser().parseControlFile(controlTarStream);
-            }
-          }
-        }
-      }
-
+    try (TempBlob tempBlob = storageFacet.createTempBlob(body, FacetHelper.hashAlgorithms)) {
+      ControlFile control = AptPackageParser.parsePackage(tempBlob);
       if (control == null) {
         throw new IllegalOperationException("Invalid Debian package supplied");
       }
-
-      String name = control.getField("Package").map(f -> f.value).get();
-      String version = control.getField("Version").map(f -> f.value).get();
-      String architecture = control.getField("Architecture").map(f -> f.value).get();
-
-      String assetName = name + "_" + version + "_" + architecture + ".deb";
-      String assetPath = "pool/" + name.substring(0, 1) + "/" + name + "/" + assetName;
-
-      Content content = aptFacet.put(assetPath, new StreamPayload(() -> tempBlob.get(), body.getSize(), body.getContentType()));
-      Asset asset = Content.findAsset(tx, bucket, content);
-      String indexSection = buildIndexSection(control, asset.size(), asset.getChecksums(FacetHelper.hashAlgorithms), assetPath);
-      asset.formatAttributes().set(P_ARCHITECTURE, architecture);
-      asset.formatAttributes().set(P_PACKAGE_NAME, name);
-      asset.formatAttributes().set(P_PACKAGE_VERSION, version);
-      asset.formatAttributes().set(P_INDEX_SECTION, indexSection);
-      asset.formatAttributes().set(P_ASSET_KIND, "DEB");
-      tx.saveAsset(asset);
-
-      List<AssetChange> changes = new ArrayList<>();
-      changes.add(new AssetChange(AssetAction.ADDED, asset));
-
-      for (Asset removed : selectOldPackagesToRemove(name, architecture)) {
-        tx.deleteAsset(removed);
-        changes.add(new AssetChange(AssetAction.REMOVED, removed));
-      }
-
-      rebuildIndexesInTransaction(tx, changes.stream().toArray(AssetChange[]::new));
+      return ingestAsset(control, tempBlob, body.getSize(), body.getContentType());
     }
+  }
+
+  @TransactionalStoreBlob
+  public Asset ingestAsset(ControlFile control, TempBlob body, long size, String contentType) throws IOException, PGPException {
+    AptFacet aptFacet = getRepository().facet(AptFacet.class);
+    StorageTx tx = UnitOfWork.currentTx();
+    Bucket bucket = tx.findBucket(getRepository());
+
+    String name = control.getField("Package").map(f -> f.value).get();
+    String version = control.getField("Version").map(f -> f.value).get();
+    String architecture = control.getField("Architecture").map(f -> f.value).get();
+
+    String assetPath = FacetHelper.buildAssetPath(name, version, architecture);
+
+    Content content = aptFacet.put(assetPath, new StreamPayload(() -> body.get(), size, contentType));
+    Asset asset = Content.findAsset(tx, bucket, content);
+    String indexSection = buildIndexSection(control, asset.size(), asset.getChecksums(FacetHelper.hashAlgorithms), assetPath);
+    asset.formatAttributes().set(P_ARCHITECTURE, architecture);
+    asset.formatAttributes().set(P_PACKAGE_NAME, name);
+    asset.formatAttributes().set(P_PACKAGE_VERSION, version);
+    asset.formatAttributes().set(P_INDEX_SECTION, indexSection);
+    asset.formatAttributes().set(P_ASSET_KIND, "DEB");
+    tx.saveAsset(asset);
+
+    List<AssetChange> changes = new ArrayList<>();
+    changes.add(new AssetChange(AssetAction.ADDED, asset));
+
+    for (Asset removed : selectOldPackagesToRemove(name, architecture)) {
+      tx.deleteAsset(removed);
+      changes.add(new AssetChange(AssetAction.REMOVED, removed));
+    }
+
+    rebuildIndexesInTransaction(tx, changes.stream().toArray(AssetChange[]::new));
+    return asset;
   }
 
   public void rebuildIndexes(AssetChange... changes) throws IOException, PGPException {
