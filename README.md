@@ -53,6 +53,7 @@ The application will now be available from your browser at http://localhost:8081
    +     <details>net.staticsnow:nexus-repository-apt</details>
    +     <bundle>mvn:net.staticsnow/nexus-repository-apt/1.0.7</bundle>
    +     <bundle>mvn:org.apache.commons/commons-compress/1.16.1</bundle>
+   +     <bundle>mvn:org.tukaani/xz/1.8</bundle>
    + </feature>
     </features>
    ```
