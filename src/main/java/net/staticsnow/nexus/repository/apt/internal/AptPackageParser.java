@@ -14,11 +14,11 @@ package net.staticsnow.nexus.repository.apt.internal;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.function.Supplier;
-import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ar.ArArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
 import org.apache.commons.io.input.CloseShieldInputStream;
 
@@ -37,10 +37,11 @@ public class AptPackageParser {
             controlStream = new CloseShieldInputStream(is);
             break;
           case "control.tar.gz":
-            controlStream = new GZIPInputStream(new CloseShieldInputStream(is));
+            controlStream = new GzipCompressorInputStream(new CloseShieldInputStream(is));
             break;
           case "control.tar.xz":
             controlStream = new XZCompressorInputStream(new CloseShieldInputStream(is));
+            break;
           default:
             continue;
         }
