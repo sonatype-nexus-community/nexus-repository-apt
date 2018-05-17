@@ -74,8 +74,8 @@ public class AptUploadHandler
         String assetPath = FacetHelper.buildAssetPath(name, version, architecture);
         ensurePermitted(repository.getName(), AptFormat.NAME, assetPath, Collections.emptyMap());
         try {
-          Asset ast = hostedFacet.ingestAsset(upload.getAssetUploads().get(0).getPayload());
-          return new UploadResponse(ast);
+          Asset asset = hostedFacet.ingestAsset(upload.getAssetUploads().get(0).getPayload());
+          return new UploadResponse(asset);
         } catch (PGPException e) {
           throw new IOException(e);
         }

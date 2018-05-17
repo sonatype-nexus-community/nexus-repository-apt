@@ -22,7 +22,7 @@
 
 ### Run a docker container from that image
 
-``` docker run -d -p 8081:8081 --name nexus-server nexus-repository-apt:3.11.0 ```
+``` docker run -d -p 8081:8081 --name nexus-repo nexus-repository-apt:3.11.0 ```
 
 For further information like how to persist volumes check out [the GitHub Repo for the official Nexus Repository 3 Docker image](https://github.com/sonatype/docker-nexus3).
 
