@@ -130,6 +130,7 @@ public abstract class AptSnapshotFacetSupport
         {
           boolean done = false;
 
+          @Override
           public int read() throws IOException {
             if (done) {
               return -1;
@@ -140,6 +141,18 @@ public abstract class AptSnapshotFacetSupport
               return -1;
             }
             return c;
+          }
+
+          @Override
+          public int read(byte[] b, int off, int len) throws IOException {
+            for (int i = 0; i < len; i++) {
+              int c = read();
+              if (c == -1) {
+                return i == 0 ? -1 : i;
+              }
+              b[off + i] = (byte)c;
+            }
+            return len;
           }
         };
       }

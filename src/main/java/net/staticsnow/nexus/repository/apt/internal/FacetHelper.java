@@ -54,14 +54,16 @@ public class FacetHelper
       return Arrays.asList(
           new ContentSpecifier("Packages", SnapshotItem.Role.PACKAGE_INDEX_RAW),
           new ContentSpecifier("Packages.gz", SnapshotItem.Role.PACKAGE_INDEX_GZ),
-          new ContentSpecifier("Packages.bz2", SnapshotItem.Role.PACKAGE_INDEX_BZ2));
+          new ContentSpecifier("Packages.bz2", SnapshotItem.Role.PACKAGE_INDEX_BZ2),
+          new ContentSpecifier("Packages.xz", SnapshotItem.Role.PACKAGE_INDEX_XZ));
     }
     else {
       String dist = facet.getDistribution();
       return Arrays.asList(
           new ContentSpecifier("dists/" + dist + "/" + component + "/binary-" + arch + "/Packages", SnapshotItem.Role.PACKAGE_INDEX_RAW),
           new ContentSpecifier("dists/" + dist + "/" + component + "/binary-" + arch + "/Packages.gz", SnapshotItem.Role.PACKAGE_INDEX_GZ),
-          new ContentSpecifier("dists/" + dist + "/" + component + "/binary-" + arch + "/Packages.bz2", SnapshotItem.Role.PACKAGE_INDEX_BZ2));
+          new ContentSpecifier("dists/" + dist + "/" + component + "/binary-" + arch + "/Packages.bz2", SnapshotItem.Role.PACKAGE_INDEX_BZ2),
+          new ContentSpecifier("dists/" + dist + "/" + component + "/binary-" + arch + "/Packages.xz", SnapshotItem.Role.PACKAGE_INDEX_XZ));
     }
 
   }
