@@ -65,6 +65,9 @@ This will cause the plugin to be loaded and started with each startup of Nexus R
 ### Create a snapshot of the current package lists for the repo that can be pulled from:
 `curl -u user:pass -X MKCOL http://nexus_url:8081/repository/repo_name/snapshots/$SNAPSHOT_ID`
 
+### Create gpg key required for signing apt-packages
+See https://help.github.com/articles/generating-a-new-gpg-key/
+
 ## The Fine Print
 
 It is worth noting that this is **NOT SUPPORTED** by Sonatype, and is a contribution of Mike Poindexter's
