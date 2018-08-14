@@ -1,6 +1,6 @@
 # Nexus repository APT plugin
 
-[![Build Status](https://travis-ci.org/sonatype-nexus-community/nexus-repository-apt.svg?branch=master)](https://travis-ci.org/sonatype-nexus-community/nexus-repository-apt)
+[![Build Status](https://travis-ci.org/sonatype-nexus-community/nexus-repository-apt.svg?branch=master)](https://travis-ci.org/sonatype-nexus-community/nexus-repository-apt) [![DepShield Badge](https://depshield.sonatype.org/badges/sonatype-nexus-community/nexus-repository-apt/depshield.svg)](https://depshield.github.io)
 
 * Version 1.0.7 (master) is for Nexus Repo 3.11.0
 * Version 1.0.5 requires Nexus Repo 3.9.0
