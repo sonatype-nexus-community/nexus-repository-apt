@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.sonatype.nexus.plugins</groupId>
     <artifactId>nexus-plugins</artifactId>
-    <version>3.11.0-01</version>
+    <version>3.13.0-01</version>
   </parent>
   <groupId>net.staticsnow</groupId>
   <artifactId>nexus-repository-apt</artifactId>
   <name>${project.groupId}:${project.artifactId}</name>
-  <version>1.0.7</version>
+  <version>1.0.8</version>
   <packaging>bundle</packaging>
 
   <dependencies>

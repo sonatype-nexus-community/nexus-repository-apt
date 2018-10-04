@@ -2,9 +2,14 @@
 
 [![Build Status](https://travis-ci.org/sonatype-nexus-community/nexus-repository-apt.svg?branch=master)](https://travis-ci.org/sonatype-nexus-community/nexus-repository-apt) [![DepShield Badge](https://depshield.sonatype.org/badges/sonatype-nexus-community/nexus-repository-apt/depshield.svg)](https://depshield.github.io)
 
-* Version 1.0.7 (master) is for Nexus Repo 3.11.0
-* Version 1.0.5 requires Nexus Repo 3.9.0
-* For older Nexus Repo versions use tag 1.0.2
+Compatibility Matrix:
+
+| Plugin Version | Nexus Repository Version |
+|----------------|--------------------------|
+| v1.0.2         | <3.9.0                   |
+| v1.0.5         | 3.9.0                    |
+| v1.0.7         | 3.11.0                   |
+| v1.0.8         | 3.13.0                   |
 
 ### Build
 * Clone the project:
@@ -18,11 +23,11 @@
   ```
 ### Build with docker and create an image based on nexus repository 3
 
-``` docker build -t nexus-repository-apt:3.11.0 .```
+``` docker build -t nexus-repository-apt:3.13.0 .```
 
 ### Run a docker container from that image
 
-``` docker run -d -p 8081:8081 --name nexus-repo nexus-repository-apt:3.11.0 ```
+``` docker run -d -p 8081:8081 --name nexus-repo nexus-repository-apt:3.13.0 ```
 
 For further information like how to persist volumes check out [the GitHub Repo for the official Nexus Repository 3 Docker image](https://github.com/sonatype/docker-nexus3).
 
@@ -40,7 +45,7 @@ The application will now be available from your browser at http://localhost:8081
   ./nexus stop
   ```
 
-* Copy the bundle into `<nexus_dir>/system/net/staticsnow/nexus-repository-apt/1.0.7/nexus-repository-apt-1.0.7.jar`
+* Copy the bundle into `<nexus_dir>/system/net/staticsnow/nexus-repository-apt/1.0.8/nexus-repository-apt-1.0.8.jar`
 * Make the following additions marked with + to `<nexus_dir>/system/org/sonatype/nexus/assemblies/nexus-core-feature/3.x.y/nexus-core-feature-3.x.y-features.xml`
    ```
          <feature prerequisite="false" dependency="false">nexus-repository-maven</feature>
@@ -49,9 +54,9 @@ The application will now be available from your browser at http://localhost:8081
    ```
    And
    ```
-   + <feature name="nexus-repository-apt" description="net.staticsnow:nexus-repository-apt" version="1.0.7">
+   + <feature name="nexus-repository-apt" description="net.staticsnow:nexus-repository-apt" version="1.0.8">
    +     <details>net.staticsnow:nexus-repository-apt</details>
-   +     <bundle>mvn:net.staticsnow/nexus-repository-apt/1.0.7</bundle>
+   +     <bundle>mvn:net.staticsnow/nexus-repository-apt/1.0.8</bundle>
    +     <bundle>mvn:org.apache.commons/commons-compress/1.16.1</bundle>
    +     <bundle>mvn:org.tukaani/xz/1.8</bundle>
    + </feature>
