@@ -49,8 +49,8 @@ The application will now be available from your browser at http://localhost:8081
 * Copy the bundle into `<nexus_dir>/system/net/staticsnow/nexus-repository-apt/1.0.9/nexus-repository-apt-1.0.9.jar`
 * Make the following additions marked with + to `<nexus_dir>/system/org/sonatype/nexus/assemblies/nexus-core-feature/3.x.y/nexus-core-feature-3.x.y-features.xml`
    ```
-         <feature prerequisite="false" dependency="false">nexus-repository-maven</feature>
-   +     <feature prerequisite="false" dependency="false">nexus-repository-apt</feature>
+         <feature version="x.y.z" prerequisite="false" dependency="false">nexus-repository-maven</feature>
+   +     <feature version="1.0.9" prerequisite="false" dependency="false">nexus-repository-apt</feature>
      </feature>
    ```
    And
