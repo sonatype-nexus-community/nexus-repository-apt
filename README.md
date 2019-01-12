@@ -12,6 +12,7 @@ Compatibility Matrix:
 | v1.0.8         | 3.13.0                   |
 | v1.0.9         | 3.14.0                   |
 | v1.0.10        | 3.15.0                   |
+| v1.0.11        | 3.15.0                   |
 
 ### Build
 * Clone the project:
@@ -47,18 +48,18 @@ The application will now be available from your browser at http://localhost:8081
   ./nexus stop
   ```
 
-* Copy the bundle into `<nexus_dir>/system/net/staticsnow/nexus-repository-apt/1.0.10/nexus-repository-apt-1.0.10.jar`
+* Copy the bundle into `<nexus_dir>/system/org/sonatype/nexus/plugins/nexus-repository-apt/1.0.11/nexus-repository-apt-1.0.11.jar`
 * Make the following additions marked with + to `<nexus_dir>/system/org/sonatype/nexus/assemblies/nexus-core-feature/3.x.y/nexus-core-feature-3.x.y-features.xml`
    ```
          <feature version="x.y.z" prerequisite="false" dependency="false">nexus-repository-maven</feature>
-   +     <feature version="1.0.10" prerequisite="false" dependency="false">nexus-repository-apt</feature>
+   +     <feature version="1.0.11" prerequisite="false" dependency="false">nexus-repository-apt</feature>
      </feature>
    ```
    And
    ```
-   + <feature name="nexus-repository-apt" description="net.staticsnow:nexus-repository-apt" version="1.0.10">
-   +     <details>net.staticsnow:nexus-repository-apt</details>
-   +     <bundle>mvn:net.staticsnow/nexus-repository-apt/1.0.10</bundle>
+   + <feature name="nexus-repository-apt" description="org.sonatype.nexus.plugins:nexus-repository-apt" version="1.0.11">
+   +     <details>org.sonatype.nexus.plugins:nexus-repository-apt</details>
+   +     <bundle>mvn:org.sonatype.nexus.plugins/nexus-repository-apt/1.0.11</bundle>
    +     <bundle>mvn:org.apache.commons/commons-compress/1.18</bundle>
    +     <bundle>mvn:org.tukaani/xz/1.8</bundle>
    + </feature>

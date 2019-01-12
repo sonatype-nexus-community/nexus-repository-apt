@@ -1,0 +1,23 @@
+/*
+ * Nexus APT plugin.
+ * 
+ * Copyright (c) 2016-Present Michael Poindexter.
+ * 
+ * This program and the accompanying materials are made available under the terms of the Eclipse Public License Version 1.0,
+ * which accompanies this distribution and is available at http://www.eclipse.org/legal/epl-v10.html.
+ *
+ * "Sonatype" and "Sonatype Nexus" are trademarks of Sonatype, Inc.
+ */
+
+package org.sonatype.nexus.plugins.apt.internal.snapshot;
+
+import java.util.List;
+
+import org.sonatype.nexus.plugins.apt.internal.debian.Release;
+
+public interface SnapshotComponentSelector
+{
+  public List<String> getArchitectures(Release release);
+
+  public List<String> getComponents(Release release);
+}
