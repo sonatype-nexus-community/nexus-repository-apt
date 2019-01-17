@@ -28,7 +28,7 @@ Ext.define('NX.aptui.app.PluginStrings', {
     Repository_Facet_AptFacet_Flat_FieldLabel: 'Flat',
     Repository_Facet_AptFacet_Flat_HelpText: 'Is this repository flat?',
     Repository_Facet_AptSigningFacet_Keypair_FieldLabel: 'Signing Key',
-    Repository_Facet_AptSigningFacet_Keypair_HelpText: 'PGP signing key pair',
+    Repository_Facet_AptSigningFacet_Keypair_HelpText: 'PGP signing key pair (armored private key eg. gpg --export-private-key --armor <Name or ID>)',
     Repository_Facet_AptSigningFacet_Passphrase_FieldLabel: 'Passphrase',
     Repository_Facet_AptHostedFacet_AssetHistoryLimit_FieldLabel: 'Asset History Limit',
     Repository_Facet_AptHostedFacet_AssetHistoryLimit_HelpText: 'Number of versions of each package to keep.  If empty all versions will be kept.',
