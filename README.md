@@ -74,6 +74,8 @@ This will cause the plugin to be loaded and started with each startup of Nexus R
 ### Create gpg key required for signing apt-packages
 See https://help.github.com/articles/generating-a-new-gpg-key/
 
+To sign packages use; `gpg --export-secret-key --armor <Name or ID>` and passphrase in the hosted repository configuration.
+
 ## The Fine Print
 
 It is worth noting that this is **NOT SUPPORTED** by Sonatype, and is a contribution of Mike Poindexter's
