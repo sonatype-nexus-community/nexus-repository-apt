@@ -76,6 +76,14 @@ See https://help.github.com/articles/generating-a-new-gpg-key/
 
 To sign packages use; `gpg --export-secret-key --armor <Name or ID>` and passphrase in the hosted repository configuration.
 
+The private armored key should look like this:
+`
+-----BEGIN PGP PRIVATE KEY BLOCK-----
+
+...Base64 key...
+-----END PGP PRIVATE KEY BLOCK-----
+`
+
 ## The Fine Print
 
 It is worth noting that this is **NOT SUPPORTED** by Sonatype, and is a contribution of Mike Poindexter's
