@@ -77,12 +77,12 @@ See https://help.github.com/articles/generating-a-new-gpg-key/
 To sign packages use; `gpg --export-secret-key --armor <Name or ID>` and passphrase in the hosted repository configuration.
 
 The private armored key should look like this:
-`
+```
 -----BEGIN PGP PRIVATE KEY BLOCK-----
 
 ...Base64 key...
 -----END PGP PRIVATE KEY BLOCK-----
-`
+```
 
 ## The Fine Print
 
