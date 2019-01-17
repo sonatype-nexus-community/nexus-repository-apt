@@ -18,6 +18,7 @@ A lot of awesome people have contributed to this project! Here they are:
 * [@jordiclariana](https://github.com/jordiclariana/) (Jordi Clariana)
 * [@Hermain](https://github.com/Hermain/) (Hermain)
 * [@DarthHater](https://github.com/darthhater/) (Jeffry Hesse)
+* [@MikkelHJuul](https://github.com/mikkelhjuul) (Mikkel Juul)
 
 And...
 
