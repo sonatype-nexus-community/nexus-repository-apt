@@ -15,6 +15,8 @@ import static org.sonatype.nexus.repository.storage.AssetEntityAdapter.P_ASSET_K
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.util.Collections;
+import java.util.Set;
 
 import javax.inject.Named;
 
@@ -36,14 +38,14 @@ public class AptHostedComponentMaintenanceFacet
 {
   @Transactional(retryOn = ONeedRetryException.class)
   @Override
-  protected void deleteAssetTx(EntityId assetId, boolean deleteBlobs) {
+  protected Set<String> deleteAssetTx(EntityId assetId, boolean deleteBlobs) {
     StorageTx tx = UnitOfWork.currentTx();
     Asset asset = tx.findAsset(assetId, tx.findBucket(getRepository()));
     if (asset == null) {
-      return;
+      return Collections.emptySet();
     }
     String assetKind = asset.formatAttributes().get(P_ASSET_KIND, String.class);
-    super.deleteAssetTx(assetId, deleteBlobs);
+    Set<String> result = super.deleteAssetTx(assetId, deleteBlobs);
     if ("DEB".equals(assetKind)) {
       try {
         getRepository().facet(AptHostedFacet.class)
@@ -56,5 +58,6 @@ public class AptHostedComponentMaintenanceFacet
         throw new RuntimeException(e);
       }
     }
+    return result;
   }
 }
