@@ -11,7 +11,7 @@ Compatibility Matrix:
 | v1.0.7         | 3.11.0                   |
 | v1.0.8         | 3.13.0                   |
 | v1.0.9         | 3.14.0                   |
-| v1.0.10        | 3.15.0                   |
+| v1.0.10        | 3.15.2                   |
 
 ### Build
 * Clone the project:
@@ -25,11 +25,11 @@ Compatibility Matrix:
   ```
 ### Build with docker and create an image based on nexus repository 3
 
-``` docker build -t nexus-repository-apt:3.15.0 .```
+``` docker build -t nexus-repository-apt:3.15.2 .```
 
 ### Run a docker container from that image
 
-``` docker run -d -p 8081:8081 --name nexus-repo nexus-repository-apt:3.15.0 ```
+``` docker run -d -p 8081:8081 --name nexus-repo nexus-repository-apt:3.15.2 ```
 
 For further information like how to persist volumes check out [the GitHub Repo for the official Nexus Repository 3 Docker image](https://github.com/sonatype/docker-nexus3).
 
