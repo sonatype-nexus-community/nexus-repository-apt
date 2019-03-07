@@ -36,6 +36,7 @@ import org.sonatype.nexus.repository.view.ViewFacet;
 import org.sonatype.nexus.repository.view.handlers.ConditionalRequestHandler;
 import org.sonatype.nexus.repository.view.handlers.ContentHeadersHandler;
 import org.sonatype.nexus.repository.view.handlers.ExceptionHandler;
+import org.sonatype.nexus.repository.view.handlers.LastDownloadedHandler;
 import org.sonatype.nexus.repository.view.handlers.TimingHandler;
 import org.sonatype.nexus.repository.view.matchers.AlwaysMatcher;
 
@@ -115,6 +116,9 @@ public class AptHostedRecipe
   AptSigningHandler signingHandler;
 
   @Inject
+  LastDownloadedHandler lastDownloadedHandler;
+
+  @Inject
   public AptHostedRecipe(@Named(HostedType.NAME) Type type, @Named(AptFormat.NAME) Format format) {
     super(type, format);
   }
@@ -144,6 +148,7 @@ public class AptHostedRecipe
         .handler(partialFetchHandler)
         .handler(contentHeadersHandler)
         .handler(unitOfWorkHandler)
+        .handler(lastDownloadedHandler)
         .handler(snapshotHandler)
         .handler(signingHandler)
         .handler(hostedHandler).create());
