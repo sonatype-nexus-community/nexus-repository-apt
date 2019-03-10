@@ -42,6 +42,7 @@ import org.sonatype.nexus.repository.view.ViewFacet;
 import org.sonatype.nexus.repository.view.handlers.ConditionalRequestHandler;
 import org.sonatype.nexus.repository.view.handlers.ContentHeadersHandler;
 import org.sonatype.nexus.repository.view.handlers.ExceptionHandler;
+import org.sonatype.nexus.repository.view.handlers.LastDownloadedHandler;
 import org.sonatype.nexus.repository.view.handlers.TimingHandler;
 import org.sonatype.nexus.repository.view.matchers.AlwaysMatcher;
 
@@ -125,6 +126,9 @@ public class AptProxyRecipe
   AptSnapshotHandler snapshotHandler;
 
   @Inject
+  LastDownloadedHandler lastDownloadedHandler;
+
+  @Inject
   public AptProxyRecipe(@Named(ProxyType.NAME) Type type, @Named(AptFormat.NAME) Format format) {
     super(type, format);
   }
@@ -158,6 +162,7 @@ public class AptProxyRecipe
         .handler(contentHeadersHandler)
         .handler(unitOfWorkHandler)
         .handler(snapshotHandler)
+        .handler(lastDownloadedHandler)
         .handler(proxyHandler).create());
 
     builder.defaultHandlers(notFound());

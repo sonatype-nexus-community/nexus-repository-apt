@@ -91,9 +91,6 @@ public abstract class AptSnapshotFacetSupport
     if (asset == null) {
       return null;
     }
-    if (asset.markAsDownloaded()) {
-      tx.saveAsset(asset);
-    }
 
     final Blob blob = tx.requireBlob(asset.requireBlobRef());
     return FacetHelper.toContent(asset, blob);

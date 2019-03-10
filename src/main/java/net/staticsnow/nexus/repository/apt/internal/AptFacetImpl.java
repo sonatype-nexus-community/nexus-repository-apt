@@ -109,9 +109,6 @@ public class AptFacetImpl
     if (asset == null) {
       return null;
     }
-    if (asset.markAsDownloaded()) {
-      tx.saveAsset(asset);
-    }
 
     return FacetHelper.toContent(asset, tx.requireBlob(asset.requireBlobRef()));
   }
