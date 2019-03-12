@@ -16,7 +16,6 @@ import java.io.InputStream;
 import java.util.function.Supplier;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
-import org.apache.commons.compress.archivers.ar.ArArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
@@ -24,6 +23,10 @@ import org.apache.commons.io.input.CloseShieldInputStream;
 
 import net.staticsnow.nexus.repository.apt.internal.debian.ControlFile;
 import net.staticsnow.nexus.repository.apt.internal.debian.ControlFileParser;
+
+// NOTE: replace with commons-compress ArArchiveInputStream once fixes to end of stream detection are
+// available in a public release.
+import net.staticsnow.nexus.repository.apt.internal.org.apache.commons.compress.archivers.ar.ArArchiveInputStream;
 
 public class AptPackageParser {
   public static ControlFile parsePackage(final Supplier<InputStream> supplier) throws IOException {
