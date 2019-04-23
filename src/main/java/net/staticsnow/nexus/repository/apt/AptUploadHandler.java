@@ -27,11 +27,11 @@ import org.sonatype.nexus.repository.security.VariableResolverAdapter;
 import org.sonatype.nexus.repository.storage.Asset;
 import org.sonatype.nexus.repository.storage.StorageFacet;
 import org.sonatype.nexus.repository.storage.TempBlob;
-import org.sonatype.nexus.repository.transaction.TransactionalStoreBlob;
 import org.sonatype.nexus.repository.upload.ComponentUpload;
 import org.sonatype.nexus.repository.upload.UploadDefinition;
 import org.sonatype.nexus.repository.upload.UploadHandlerSupport;
 import org.sonatype.nexus.repository.upload.UploadResponse;
+import org.sonatype.nexus.transaction.UnitOfWork;
 
 import net.staticsnow.nexus.repository.apt.internal.AptFormat;
 import net.staticsnow.nexus.repository.apt.internal.AptPackageParser;
@@ -61,26 +61,37 @@ public class AptUploadHandler
   public UploadResponse handle(Repository repository, ComponentUpload upload) throws IOException {
     AptHostedFacet hostedFacet = repository.facet(AptHostedFacet.class);
     StorageFacet storageFacet = repository.facet(StorageFacet.class);
-    return TransactionalStoreBlob.operation.withDb(storageFacet.txSupplier()).throwing(IOException.class).call(() -> {
-      try (TempBlob tempBlob = storageFacet.createTempBlob(upload.getAssetUploads().get(0).getPayload(), FacetHelper.hashAlgorithms)) {
-        
-        ControlFile controlFile = AptPackageParser.parsePackage(tempBlob);
-        if (controlFile == null) {
-          throw new IOException("Invalid debian package:  no control file");
-        }
-        String name = controlFile.getField("Package").map(f -> f.value).get();
-        String version = controlFile.getField("Version").map(f -> f.value).get();
-        String architecture = controlFile.getField("Architecture").map(f -> f.value).get();
-        String assetPath = FacetHelper.buildAssetPath(name, version, architecture);
-        ensurePermitted(repository.getName(), AptFormat.NAME, assetPath, Collections.emptyMap());
-        try {
-          Asset asset = hostedFacet.ingestAsset(upload.getAssetUploads().get(0).getPayload());
-          return new UploadResponse(asset);
-        } catch (PGPException e) {
-          throw new IOException(e);
-        }
+
+    try (TempBlob tempBlob = storageFacet.createTempBlob(upload.getAssetUploads().get(0).getPayload(), FacetHelper.hashAlgorithms)) {
+      ControlFile controlFile = AptPackageParser.parsePackage(tempBlob);
+      if (controlFile == null) {
+        throw new IOException("Invalid debian package:  no control file");
       }
-    });
+      String name = controlFile.getField("Package").map(f -> f.value).get();
+      String version = controlFile.getField("Version").map(f -> f.value).get();
+      String architecture = controlFile.getField("Architecture").map(f -> f.value).get();
+      String assetPath = FacetHelper.buildAssetPath(name, version, architecture);
+
+      doValidation(repository, assetPath);
+
+      UnitOfWork.begin(storageFacet.txSupplier());
+      try {
+        Asset asset = hostedFacet.ingestAsset(upload.getAssetUploads().get(0).getPayload());
+        return new UploadResponse(asset);
+      }
+      catch (PGPException e) {
+        throw new IOException(e);
+      }
+      finally {
+        UnitOfWork.end();
+      }
+    }
+  }
+
+  private void doValidation(final Repository repository,
+                            final String assetPath)
+  {
+    ensurePermitted(repository.getName(), AptFormat.NAME, assetPath, Collections.emptyMap());
   }
 
   @Override
