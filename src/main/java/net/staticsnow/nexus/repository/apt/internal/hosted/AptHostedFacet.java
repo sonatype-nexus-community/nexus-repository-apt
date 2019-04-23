@@ -173,9 +173,6 @@ public class AptHostedFacet
     StringBuilder sha256Builder = new StringBuilder();
     StringBuilder md5Builder = new StringBuilder();
 
-    String sep = System.getProperty("line.separator");
-    System.setProperty("line.separator", "\n");
-
     String releaseFile;
     try (CompressingTempFileStore store = buildPackageIndexes(tx, bucket, changes)) {
       for (Map.Entry<String, CompressingTempFileStore.FileMetadata> entry : store.getFiles().entrySet()) {
@@ -201,12 +198,13 @@ public class AptHostedFacet
       releaseFile = buildReleaseFile(aptFacet.getDistribution(), store.getFiles().keySet(), md5Builder.toString(), sha256Builder.toString());
     }
 
+    releaseFile = releaseFile.replace("\r", "");
     aptFacet.put(releaseIndexName("Release"), new BytesPayload(releaseFile.getBytes(Charsets.UTF_8), AptMimeTypes.TEXT));
-    // releaseFile = releaseFile.replace("\r", "");
     byte[] inRelease = signingFacet.signInline(releaseFile);
+    inRelease = new String(inRelease, Charsets.UTF_8).replace("\r", "").getBytes();
     aptFacet.put(releaseIndexName("InRelease"), new BytesPayload(inRelease, AptMimeTypes.TEXT));
-    System.setProperty("line.separator", sep);
     byte[] releaseGpg = signingFacet.signExternal(releaseFile);
+    releaseGpg = new String(releaseGpg, Charsets.UTF_8).replace("\r", "").getBytes();
     aptFacet.put(releaseIndexName("Release.gpg"), new BytesPayload(releaseGpg, AptMimeTypes.SIGNATURE));
   }
 
