@@ -1,18 +1,18 @@
-ARG NEXUS_VERSION=3.15.2
+ARG NEXUS_VERSION=3.16.1
 
 FROM maven:3-jdk-8-alpine AS build
-ARG NEXUS_VERSION=3.15.2
-ARG NEXUS_BUILD=01
+ARG NEXUS_VERSION=3.16.1
+ARG NEXUS_BUILD=02
 
 COPY . /nexus-repository-apt/
-RUN cd /nexus-repository-apt/; sed -i "s/3.15.2-01/${NEXUS_VERSION}-${NEXUS_BUILD}/g" pom.xml; \
+RUN cd /nexus-repository-apt/; sed -i "s/3.16.1-02/${NEXUS_VERSION}-${NEXUS_BUILD}/g" pom.xml; \
     mvn;
 
 FROM sonatype/nexus3:$NEXUS_VERSION
-ARG NEXUS_VERSION=3.15.2
-ARG NEXUS_BUILD=01
+ARG NEXUS_VERSION=3.16.1
+ARG NEXUS_BUILD=02
 # Will not seem to work in sed without some magick
-ARG APT_VERSION=1.0.10
+ARG APT_VERSION=1.0.11
 ARG COMP_VERSION=1.18
 ARG XZ_VERSION=1.8
 ARG APT_TARGET=/opt/sonatype/nexus/system/net/staticsnow/nexus-repository-apt/${APT_VERSION}/
