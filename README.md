@@ -9,9 +9,13 @@ enabled by default.
 >If you are an APT user upgrading to 3.17 setting ```nexus.apt.enabled=true``` in ```./etc/nexus.properties``` will 
 enable the plugin. **You will not be able to install the community plugin.**
 
->There are some differences from the community version of the plugin. First of all, to add support for 
-some of the other features, we added component records for the Debian files. We've also removed the "retain N versions"
-feature as this conflicts with Cleanup Policies and future work we are doing in that space.
+>There are some differences from the community version of the plugin. First of all, we have added component records for 
+the Debian files which adds support for features such as *Search*, *Cleanup Policies*, *Tagging (PRO only)*
+and *Moving between repositories (PRO only)*. We've also removed the "retain N versions" feature as this conflicts with 
+Cleanup Policies and future work we are doing in that space.
+
+> We've added support for other core features: *Restore Metadata Task*, *Routing Rules*, *API for Repository creation
+via Groovy*, *Improved tree browsing* and we've added *help documentation (released with 3.18)*.
 
 Compatibility Matrix:
 
