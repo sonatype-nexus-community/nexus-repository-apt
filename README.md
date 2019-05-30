@@ -16,7 +16,7 @@ and *Moving between repositories (PRO only)*. We've also removed the "retain N v
 Cleanup Policies and future work we are doing in that space.
 
 > We've added support for other core features: *Restore Metadata Task*, *API for Repository creation
-via Groovy*, *Improved tree browsing* and we've added *help documentation (released with 3.18)*.
+via Groovy*, and we've added *help documentation (to be released with 3.18)*.
 
 Compatibility Matrix:
 
