@@ -15,7 +15,7 @@ the Debian files which adds support for features such as *Search*, *Cleanup Poli
 and *Moving between repositories (PRO only)*. We've also removed the "retain N versions" feature as this conflicts with 
 Cleanup Policies and future work we are doing in that space.
 
-> We've added support for other core features: *Restore Metadata Task*, *Routing Rules*, *API for Repository creation
+> We've added support for other core features: *Restore Metadata Task*, *API for Repository creation
 via Groovy*, *Improved tree browsing* and we've added *help documentation (released with 3.18)*.
 
 Compatibility Matrix:
