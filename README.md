@@ -6,9 +6,11 @@
 we can get early feedback on the APT plugin without impacting the wider user base. From 3.18.0 APT will be 
 enabled by default.
 
->If you are an APT user upgrading to 3.17 setting ```nexus.apt.enabled=true``` in ```./etc/nexus.properties``` will 
-enable the plugin. **You will not be able to install the community plugin.** Beyond setting the property no other 
-change is required and your existing data will remain intact.
+> **FILING ISSUES:** If using 3.17.0 or later please file any issues at https://issues.sonatype.org/.
+
+> **UPGRADING to 3.17.0:** If you are an APT user upgrading to 3.17 setting ```nexus.apt.enabled=true``` in 
+```./etc/nexus.properties``` will enable the plugin. **You will not be able to install the community plugin.** Beyond 
+setting the property no other change is required and your existing data will remain intact.
 
 >There are some differences from the community version of the plugin. First of all, we have added component records for 
 the Debian files which adds support for features such as *Search*, *Cleanup Policies*, *Tagging (PRO only)*
