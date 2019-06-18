@@ -2,16 +2,30 @@
 
 [![Build Status](https://travis-ci.org/sonatype-nexus-community/nexus-repository-apt.svg?branch=master)](https://travis-ci.org/sonatype-nexus-community/nexus-repository-apt) [![DepShield Badge](https://depshield.sonatype.org/badges/sonatype-nexus-community/nexus-repository-apt/depshield.svg)](https://depshield.github.io)
 
+> **Huzzah!** APT is now part of Nexus Repository Manager. Version 3.17.0 includes the APT plugin by default.
+
+> **Filing issues:** If using 3.17.0 or later please file any issues at https://issues.sonatype.org/.
+
+> **Upgrading to 3.17.0:** If you are an existing APT user upgrading to 3.17 you will not be able to install the
+ community plugin. No other changes are required and your existing data will remain intact.
+
+>There are some differences from the community version of the plugin. First of all, we have added component records for 
+the .deb files which adds support for features such as *Search*, *Cleanup Policies*, *Tagging (PRO only)* and *Moving 
+between repositories (PRO only)*. We've also added support for *Restore Metadata Task*, *API for Repository creation 
+via Groovy* and we've written *help documentation*. The "retain N versions" feature has been removed as this conflicts 
+with Cleanup Policies and future work we are doing in that space.
+
 Compatibility Matrix:
 
-| Plugin Version | Nexus Repository Version |
-|----------------|--------------------------|
-| v1.0.2         | <3.9.0                   |
-| v1.0.5         | 3.9.0                    |
-| v1.0.7         | 3.11.0                   |
-| v1.0.8         | 3.13.0                   |
-| v1.0.9         | 3.14.0                   |
-| v1.0.10        | 3.15.2                   |
+| Plugin Version                    | Nexus Repository Version |
+|-----------------------------------|--------------------------|
+| v1.0.2                            | <3.9.0                   |
+| v1.0.5                            | 3.9.0                    |
+| v1.0.7                            | 3.11.0                   |
+| v1.0.8                            | 3.13.0                   |
+| v1.0.9                            | 3.14.0                   |
+| v1.0.10                           | 3.15.2                   |
+| In product                        | 3.17.0                   |
 
 ### Build
 * Clone the project:
