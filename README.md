@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/sonatype-nexus-community/nexus-repository-apt.svg?branch=master)](https://travis-ci.org/sonatype-nexus-community/nexus-repository-apt) [![DepShield Badge](https://depshield.sonatype.org/badges/sonatype-nexus-community/nexus-repository-apt/depshield.svg)](https://depshield.github.io)
 
-> **Huzzah!** APT is now part of Nexus Repository Manager. Version 3.17.0 includes the APT plugin by default.
+> **Huzzah!** APT is now part of Nexus Repository Manager. Version 3.17.0 includes the APT plugin by default. The plugin source code is now in [nexus-public](https://github.com/sonatype/nexus-public) in [nexus-repository-apt](https://github.com/sonatype/nexus-public/tree/master/plugins/nexus-repository-apt)
 
 > **Filing issues:** If using 3.17.0 or later please file any issues at https://issues.sonatype.org/.
 
